@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { s3_project } from '../s3/s3';
 import { Global, Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import * as multerS3 from "multer-s3"
@@ -8,15 +8,7 @@ import * as multerS3 from "multer-s3"
     imports: [
         MulterModule.register({
             storage: multerS3({
-                s3: new S3Client({
-                    forcePathStyle: true,
-                    region: process.env.S3_REGION,
-                    endpoint: process.env.S3_ENDPOINT,
-                    credentials: {
-                        accessKeyId: process.env.S3_ACCESS_KEY_ID,
-                        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-                    },
-                }),
+                s3: s3_project,
                 bucket: process.env.S3_BUCKET_NAME || 'files', // Use environment variable for bucket name
                 metadata: function (req, file, cb) {
                     cb(null, { fieldName: file.fieldname });
