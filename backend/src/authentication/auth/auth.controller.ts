@@ -7,6 +7,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleOAuthGuard } from '../passport-strategies/google/google.auth.guard';
 import { RequestUser } from 'src/interfaces/requestUser';
+import { RequestUserGoogle } from 'src/interfaces/requestUserGoogle';
 
 @Controller('auth')
 export class AuthController {
@@ -54,8 +55,7 @@ export class AuthController {
 
     @Get('google/callback')
     @UseGuards(GoogleOAuthGuard)
-    googleAuthRedirect(@Request() req: RequestUser) {
-        const user = req.user;
-        return req.user;
+    googleAuthRedirect(@Request() req: RequestUserGoogle) {
+        return this.authService.googleAuthentication(req.user);
     }
 }

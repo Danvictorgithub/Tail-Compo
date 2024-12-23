@@ -10,7 +10,7 @@ import { S3Service } from 'src/microservices/s3/s3.service';
 @Injectable()
 export class UsersService {
   constructor(private db: PrismaService, private profilesService: ProfilesService, private s3Service: S3Service) { }
-  async create(createUserDto: CreateUserDto, file: Express.MulterS3.File) {
+  async create(createUserDto: CreateUserDto, file?: Express.MulterS3.File) {
     const emailUnique = await this.db.user.findUnique({ where: { email: createUserDto.email } });
     if (emailUnique) {
       throw new BadRequestException("Email Address already exists");
@@ -22,6 +22,20 @@ export class UsersService {
     createUserDto.password = await argon.hash(createUserDto.password);
     const { name, image, ...userObj } = createUserDto;
     const newUser = await this.db.user.create({ data: userObj });
+    await this.profilesService.create({ name, image }, file, newUser);
+    return newUser;
+  }
+  async createVerified(createUserDto: CreateUserDto, file?: Express.MulterS3.File) {
+    const emailUnique = await this.db.user.findUnique({ where: { email: createUserDto.email } });
+    if (emailUnique) {
+      throw new BadRequestException("Email Address already exists");
+    }
+    const usernameUnique = await this.db.user.findUnique({ where: { username: createUserDto.username } });
+    if (usernameUnique) {
+      throw new BadRequestException("Username already exists");
+    }
+    const { name, image, ...userObj } = createUserDto;
+    const newUser = await this.db.user.create({ data: { ...userObj, emailVerified: true } });
     await this.profilesService.create({ name, image }, file, newUser);
     return newUser;
   }
