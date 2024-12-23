@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DevelopmentGuard } from 'src/guards/development/development.guard';
+import { JwtAuthGuard } from 'src/authentication/auth/jwt.auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -40,6 +41,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }

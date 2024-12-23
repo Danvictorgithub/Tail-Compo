@@ -15,10 +15,6 @@ import * as multerS3 from "multer-s3"
                 },
                 key: function (req, file, cb) {
                     const uniqueFileName = `${Date.now().toString()}-${file.originalname}`
-                    const bucketName = process.env.S3_BUCKET_NAME || 'files';
-                    // @ts-ignore
-                    req.supabasePublicUrl = `${process.env.SUPABASE_PUBLIC_BASE_URL}/${uniqueFileName}`
-                    // Include original file name
                     cb(null, uniqueFileName);
                 },
                 contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically set the content type

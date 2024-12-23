@@ -4,11 +4,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import * as argon from "argon2"
 import { ProfilesService } from 'src/profiles/profiles.service';
+import { S3Service } from 'src/microservices/s3/s3.service';
 
 
 @Injectable()
 export class UsersService {
-  constructor(private db: PrismaService, private profilesService: ProfilesService) { }
+  constructor(private db: PrismaService, private profilesService: ProfilesService, private s3Service: S3Service) { }
   async create(createUserDto: CreateUserDto, file: Express.MulterS3.File) {
     const emailUnique = await this.db.user.findUnique({ where: { email: createUserDto.email } });
     if (emailUnique) {
@@ -46,6 +47,8 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException("User not found");
     }
+    const profile = await this.db.profile.findFirst({ where: { userId: id } });
+    await this.s3Service.deleteFile(profile.image); // Delete user image from S3
     await this.db.user.delete({ where: { id } });
     return user;
   }

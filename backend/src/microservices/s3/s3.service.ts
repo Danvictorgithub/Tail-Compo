@@ -27,9 +27,17 @@ export class S3Service implements OnModuleInit {
     }
 
     async deleteFile(key: string): Promise<void> {
+        let filename: string;
+        try {
+            filename = getSupabaseFileName(key);
+        } catch (error) {
+            this.logger.error(`Invalid Supabase URL: "${key}".`, error);
+            // throw new InternalServerErrorException('Invalid Supabase URL.');
+        }
+
         const command = new DeleteObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME || 'files',
-            Key: getSupabaseFileName(key),
+            Key: filename,
         });
 
         try {
@@ -37,7 +45,7 @@ export class S3Service implements OnModuleInit {
             this.logger.log(`File with key "${key}" successfully deleted.`);
         } catch (error) {
             this.logger.error(`Failed to delete file with key "${key}".`, error);
-            throw new InternalServerErrorException('Failed to delete file from S3.');
+            // throw new InternalServerErrorException('Failed to delete file from S3.');
         }
     }
 }
