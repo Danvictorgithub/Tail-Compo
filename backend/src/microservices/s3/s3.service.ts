@@ -1,7 +1,7 @@
 import { DeleteObjectCommand, ListBucketsCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable, InternalServerErrorException, Logger, OnModuleInit } from '@nestjs/common';
 import { s3_project } from 'src/configs/s3/s3';
-import { getSupabaseFileName } from 'src/lib/getSupabaseFileName';
+import { getSupabaseFileName } from 'src/helpers/getSupabaseFileName';
 
 @Injectable()
 export class S3Service implements OnModuleInit {

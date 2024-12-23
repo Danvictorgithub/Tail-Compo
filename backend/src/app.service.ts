@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getSupabasePublicUrl } from './lib/supabasePublicUrl';
+import { getSupabasePublicUrl } from './helpers/supabasePublicUrl';
 
 @Injectable()
 export class AppService {

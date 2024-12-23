@@ -3,7 +3,7 @@ import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import { User } from '@prisma/client';
-import { getSupabasePublicUrl } from 'src/lib/supabasePublicUrl';
+import { getSupabasePublicUrl } from 'src/helpers/supabasePublicUrl';
 
 @Injectable()
 export class ProfilesService {
