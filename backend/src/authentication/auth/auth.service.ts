@@ -24,17 +24,12 @@ export class AuthService {
             throw new UnauthorizedException('Invalid email or password');
         }
 
-        // if (!user.emailVerified) {
-        //     throw new UnauthorizedException('Please verify your email address');
-        // }
-
         const { password: userPassword, ...userWithoutPassword } = user;
         return userWithoutPassword;
     }
     // Returns JWT Bearer Token
     async login(user: User) {
-        const { createdAt, password, updatedAt, username, emailVerified, ...payloadObj } = user;
-        const payload = payloadObj;
+        const payload = { email: user.email, sub: user.id };
         return {
             // Calls Passport JWTStrategy
             access_token: this.jwtService.sign(payload)

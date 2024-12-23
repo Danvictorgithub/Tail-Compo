@@ -10,7 +10,9 @@ export class ProfilesService {
   constructor(private db: PrismaService) { }
   async create(createProfileDto: CreateProfileDto, file: Express.MulterS3.File, user: User) {
     // Generates Intiials Image from DiceBear if no image uploaded already
-    const image = file ? getSupabasePublicUrl(file.location) : `https://api.dicebear.com/9.x/initials/svg?seed=${createProfileDto.name}`;
+    const image = file ?
+      getSupabasePublicUrl(file.location) :
+      createProfileDto.image || `https://api.dicebear.com/9.x/initials/svg?seed=${createProfileDto.name}`;
     const newProfile = await this.db.profile.create({ data: { ...createProfileDto, image, user: { connect: { id: user.id } } } });
     return newProfile;
   }

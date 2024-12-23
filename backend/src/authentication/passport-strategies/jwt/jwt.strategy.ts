@@ -12,11 +12,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             secretOrKey: process.env.JWT_SECRET || "thequickbrownfox",
         });
     };
-    async validate(payload: any) {
-        const updatedUser = await this.prisma.user.findUnique({
-            where: { id: payload.id },
-        })
-        const { password, createdAt, updatedAt, ...userInfo } = { ...updatedUser };
-        return userInfo;
-    }
 }

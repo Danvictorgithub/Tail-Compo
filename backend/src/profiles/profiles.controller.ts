@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, 
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { JwtAuthGuard } from 'src/authentication/auth/jwt.auth.guard';
+import { JwtAuthGuard } from 'src/authentication/passport-strategies/jwt/jwt.auth.guard';
 import { RequestUser } from 'src/interfaces/requestUser';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DevelopmentGuard } from 'src/guards/development/development.guard';

@@ -20,9 +20,9 @@ export class UsersService {
       throw new BadRequestException("Username already exists");
     }
     createUserDto.password = await argon.hash(createUserDto.password);
-    const { name, ...userObj } = createUserDto;
+    const { name, image, ...userObj } = createUserDto;
     const newUser = await this.db.user.create({ data: userObj });
-    await this.profilesService.create({ name }, file, newUser);
+    await this.profilesService.create({ name, image }, file, newUser);
     return newUser;
   }
 

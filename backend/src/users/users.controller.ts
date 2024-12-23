@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DevelopmentGuard } from 'src/guards/development/development.guard';
-import { JwtAuthGuard } from 'src/authentication/auth/jwt.auth.guard';
+import { JwtAuthGuard } from 'src/authentication/passport-strategies/jwt/jwt.auth.guard';
 
 @Controller('users')
 export class UsersController {
