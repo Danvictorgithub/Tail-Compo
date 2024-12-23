@@ -9,13 +9,14 @@ import { S3Module } from './microservices/s3/s3.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { MailerService } from './lib/mailer/mailer.service';
 
 @Module({
   imports: [
     UsersModule, AuthModule, ProfilesModule,
     MulterConfigModuleModule, S3Module, EventEmitterModule.forRoot(),
     MailerModule.forRoot({
-      transport: (process.env.PRODUCTION != 'true') ? 'smtp://127.0.0.1:1025' : {
+      transport: (process.env.PRODUCTION != 'true') ? 'smtp://127.0.0.1:1025' : { // smtp://127.0.0.1:1025, is used for mailcatcher (ruby gem)
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT),
         auth: {
@@ -36,6 +37,6 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MailerService],
 })
 export class AppModule { }
