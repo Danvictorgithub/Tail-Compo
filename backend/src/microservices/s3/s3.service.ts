@@ -1,6 +1,7 @@
-import { ListBucketsCommand, S3Client } from '@aws-sdk/client-s3';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { DeleteObjectCommand, ListBucketsCommand, S3Client } from '@aws-sdk/client-s3';
+import { Injectable, InternalServerErrorException, Logger, OnModuleInit } from '@nestjs/common';
 import { s3_project } from 'src/configs/s3/s3';
+import { getSupabaseFileName } from 'src/lib/getSupabaseFileName';
 
 @Injectable()
 export class S3Service implements OnModuleInit {
@@ -18,6 +19,25 @@ export class S3Service implements OnModuleInit {
         } catch (error) {
             this.logger.error('Failed to initialize S3 client.', error);
             throw new Error('S3 initialization failed. Check your configuration.');
+        }
+    }
+
+    getClient(): S3Client {
+        return this.s3Client;
+    }
+
+    async deleteFile(key: string): Promise<void> {
+        const command = new DeleteObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME || 'files',
+            Key: getSupabaseFileName(key),
+        });
+
+        try {
+            await this.s3Client.send(command);
+            this.logger.log(`File with key "${key}" successfully deleted.`);
+        } catch (error) {
+            this.logger.error(`Failed to delete file with key "${key}".`, error);
+            throw new InternalServerErrorException('Failed to delete file from S3.');
         }
     }
 }
