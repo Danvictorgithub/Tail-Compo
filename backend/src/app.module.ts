@@ -6,11 +6,12 @@ import { AuthModule } from './authentication/auth/auth.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { MulterConfigModuleModule } from './configs/multer-config-module/multer-config-module.module';
 import { S3Module } from './microservices/s3/s3.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [UsersModule, AuthModule, ProfilesModule,
-    MulterConfigModuleModule,
-    S3Module],
+  imports: [
+    UsersModule, AuthModule, ProfilesModule,
+    MulterConfigModuleModule, S3Module, EventEmitterModule.forRoot()],
   controllers: [AppController],
   providers: [AppService],
 })

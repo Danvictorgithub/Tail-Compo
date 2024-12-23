@@ -19,6 +19,7 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   profile       Profile?
+  emailTokens emailToken[]
 }
 
 model Profile {
@@ -29,5 +30,19 @@ model Profile {
   updatedAt DateTime @updatedAt
   user      User @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId String @unique
+}
+
+enum emailTokenType {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+model emailToken {
+  id        String        @id @default(cuid())
+  user      User          @relation(fields: [userId], references: [id],onDelete: Cascade)
+  userId     String
+  token     String
+  type      emailTokenType
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
