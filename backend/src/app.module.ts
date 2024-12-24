@@ -7,36 +7,26 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { MulterConfigModuleModule } from './configs/multer-config-module/multer-config-module.module';
 import { S3Module } from './microservices/s3/s3.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
-import { MailerService } from './lib/mailer/mailer.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { MailModule } from './lib/mail/mail.module';
 
 @Module({
   imports: [
     UsersModule, AuthModule, ProfilesModule,
     MulterConfigModuleModule, S3Module, EventEmitterModule.forRoot(),
-    MailerModule.forRoot({
-      transport: (process.env.PRODUCTION != 'true') ? 'smtp://127.0.0.1:1025' : { // smtp://127.0.0.1:1025, is used for mailcatcher (ruby gem)
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT),
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/public',
+      serveStaticOptions: {
+        setHeaders: (res) => {
+          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
         },
-      },
-      defaults: {
-        from: '"nest-modules" <modules@nestjs.com>',
-      },
-      template: {
-        dir: __dirname + '/templates',
-        adapter: new EjsAdapter(),
-        options: {
-          strict: false,
-        },
-      },
+      }
     }),
+    MailModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MailerService],
+  providers: [AppService],
 })
 export class AppModule { }

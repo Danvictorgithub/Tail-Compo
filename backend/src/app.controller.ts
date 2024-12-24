@@ -10,5 +10,9 @@ export class AppController {
   getHello() {
     return this.appService.getHello();
   }
+  @Get("email-test")
+  emailTest() {
+    return this.appService.emailTest();
+  }
 }
 
