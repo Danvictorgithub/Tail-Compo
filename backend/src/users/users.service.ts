@@ -41,6 +41,9 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    if (!Object.keys(updateUserDto).length) {
+      throw new BadRequestException("No data provided");
+    }
     if (updateUserDto.password) {
       updateUserDto.password = await argon.hash(updateUserDto.password);
     }
