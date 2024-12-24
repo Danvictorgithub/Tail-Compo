@@ -7,6 +7,7 @@ import { MailService } from 'src/lib/mail/mail.service';
 @Module({
   controllers: [EmailController],
   providers: [EmailService, MailService],
-  imports: [PrismaModule]
+  imports: [PrismaModule],
+  exports: [EmailService]
 })
 export class EmailModule { }

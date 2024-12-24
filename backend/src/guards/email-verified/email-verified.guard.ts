@@ -7,8 +7,7 @@ import { PrismaService } from 'src/db/prisma/prisma.service';
 export class EmailVerifiedGuard implements CanActivate {
   constructor(private db: PrismaService) { }
   async checkEmailVerification(user: User) {
-    const userObj = await this.db.user.findUnique({ where: { email: user.email } });
-    if (!userObj.emailVerified) {
+    if (!user.emailVerified) {
       throw new UnauthorizedException('Please verify your email address');
     }
     return true;

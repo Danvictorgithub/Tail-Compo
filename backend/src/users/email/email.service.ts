@@ -7,8 +7,7 @@ import { MailService } from 'src/lib/mail/mail.service';
 export class EmailService {
     constructor(private db: PrismaService, private mailService: MailService) { }
     async createEmailConfirmation(user: User) {
-        const userDetails = await this.db.user.findUnique({ where: { id: user.id } })
-        if (userDetails.emailVerified) {
+        if (user.emailVerified) {
             return new BadRequestException("User is already verified");
         }
         await this.db.emailToken.deleteMany({ where: { userId: user.id, type: 'VERIFY_EMAIL' } })
@@ -34,8 +33,7 @@ export class EmailService {
         if (new Date().getTime() - emailToken.createdAt.getTime() > 30 * 60 * 1000) {
             throw new BadRequestException('Token Expired');
         }
-        const userDetails = await this.db.user.findUnique({ where: { id: user.id } })
-        if (userDetails.emailVerified) {
+        if (user.emailVerified) {
             return new BadRequestException("User is already verified");
         }
         return { message: 'Email Token is Valid' };

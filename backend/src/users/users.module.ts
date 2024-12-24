@@ -7,6 +7,7 @@ import { S3Module } from 'src/microservices/s3/s3.module';
 import { UserCreatedService } from './events/user-created/user-created.service';
 import { UserResetPasswordService } from './events/user-reset-password/user-reset-password.service';
 import { EmailModule } from './email/email.module';
+import { EmailService } from './email/email.service';
 
 @Module({
   controllers: [UsersController],

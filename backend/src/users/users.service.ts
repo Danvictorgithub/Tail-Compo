@@ -5,11 +5,12 @@ import { PrismaService } from 'src/db/prisma/prisma.service';
 import * as argon from "argon2"
 import { ProfilesService } from 'src/profiles/profiles.service';
 import { S3Service } from 'src/microservices/s3/s3.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 
 @Injectable()
 export class UsersService {
-  constructor(private db: PrismaService, private profilesService: ProfilesService, private s3Service: S3Service) { }
+  constructor(private db: PrismaService, private profilesService: ProfilesService, private s3Service: S3Service, private eventEmitter: EventEmitter2) { }
   async create(createUserDto: CreateUserDto, file?: Express.MulterS3.File) {
     const emailUnique = await this.db.user.findUnique({ where: { email: createUserDto.email } });
     if (emailUnique) {
@@ -22,6 +23,7 @@ export class UsersService {
     createUserDto.password = await argon.hash(createUserDto.password);
     const { name, image, ...userObj } = createUserDto;
     const newUser = await this.db.user.create({ data: userObj });
+    await this.eventEmitter.emit('user.created', newUser);
     await this.profilesService.create({ name, image }, file, newUser);
     return newUser;
   }
