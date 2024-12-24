@@ -5,8 +5,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DevelopmentGuard } from 'src/guards/development/development.guard';
 import { JwtAuthGuard } from 'src/authentication/passport-strategies/jwt/jwt.auth.guard';
+import { UserSelfGuard } from 'src/guards/user-self/user-self.guard';
 
-@Controller('users-email')
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
@@ -41,9 +42,9 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @UseGuards(JwtAuthGuard, UserSelfGuard)
+  update(@Param('id') id: string, @Body(new ValidationPipe({ skipUndefinedProperties: true })) updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @UseGuards(DevelopmentGuard)

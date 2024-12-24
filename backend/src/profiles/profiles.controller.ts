@@ -17,10 +17,6 @@ export class ProfilesController {
   @UseGuards(JwtAuthGuard)
   create(
     @Body(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true
-      })
     ) createProfileDto: CreateProfileDto,
     @UploadedFile(
       new ParseFilePipe({
@@ -50,8 +46,6 @@ export class ProfilesController {
     @Param('id') id: string,
     @Body(
       new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
         skipUndefinedProperties: true
       })) updateProfileDto: UpdateProfileDto,
     @UploadedFile(

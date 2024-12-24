@@ -40,8 +40,17 @@ export class UsersService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.password) {
+      updateUserDto.password = await argon.hash(updateUserDto.password);
+    }
+    if (updateUserDto.username) {
+      const usernameUnique = await this.db.user.findUnique({ where: { username: updateUserDto.username } });
+      if (usernameUnique) {
+        throw new BadRequestException("Username already exists");
+      }
+    }
+    return await this.db.user.update({ where: { id }, data: updateUserDto });
   }
 
   async remove(id: string) {

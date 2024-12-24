@@ -3,7 +3,7 @@ import { IsEmail, IsOptional, IsString, IsStrongPassword, Length } from "class-v
 export class CreateUserDto {
     @IsEmail()
     email: string;
-    @IsString()
+    @Length(4, 32)
     username: string;
     @Length(4, 32)
     name: string;
