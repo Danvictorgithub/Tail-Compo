@@ -25,20 +25,6 @@ export class UsersService {
     await this.profilesService.create({ name, image }, file, newUser);
     return newUser;
   }
-  async createVerified(createUserDto: CreateUserDto, file?: Express.MulterS3.File) {
-    const emailUnique = await this.db.user.findUnique({ where: { email: createUserDto.email } });
-    if (emailUnique) {
-      throw new BadRequestException("Email Address already exists");
-    }
-    const usernameUnique = await this.db.user.findUnique({ where: { username: createUserDto.username } });
-    if (usernameUnique) {
-      throw new BadRequestException("Username already exists");
-    }
-    const { name, image, ...userObj } = createUserDto;
-    const newUser = await this.db.user.create({ data: { ...userObj, emailVerified: true } });
-    await this.profilesService.create({ name, image }, file, newUser);
-    return newUser;
-  }
 
   async findAll() {
     return this.db.user.findMany({ select: { id: true, email: true, emailVerified: true, createdAt: true, updatedAt: true, username: true } })
@@ -66,4 +52,24 @@ export class UsersService {
     await this.db.user.delete({ where: { id } });
     return user;
   }
+
+  async createVerified(createUserDto: CreateUserDto, file?: Express.MulterS3.File) {
+    const emailUnique = await this.db.user.findUnique({ where: { email: createUserDto.email } });
+    if (emailUnique) {
+      throw new BadRequestException("Email Address already exists");
+    }
+    const usernameUnique = await this.db.user.findUnique({ where: { username: createUserDto.username } });
+    if (usernameUnique) {
+      throw new BadRequestException("Username already exists");
+    }
+    const { name, image, ...userObj } = createUserDto;
+    const newUser = await this.db.user.create({ data: { ...userObj, emailVerified: true } });
+    await this.profilesService.create({ name, image }, file, newUser);
+    return newUser;
+  }
+  async setUserVerified(userId: string) {
+    return this.db.user.update({ where: { id: userId }, data: { emailVerified: true } });
+  }
 }
+
+

@@ -1,32 +1,39 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards, ValidationPipe } from '@nestjs/common';
 import { EmailService } from './email.service';
+import { JwtAuthGuard } from 'src/authentication/passport-strategies/jwt/jwt.auth.guard';
+import { RequestUser } from 'src/interfaces/requestUser';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Controller('user-email')
 export class EmailController {
-  constructor(private readonly emailService: EmailService) {
+  constructor(private readonly emailService: EmailService) { }
+
+  @Post("emailConfirmation")
+  @UseGuards(JwtAuthGuard)
+  async createEmailConfirmation(@Request() req: RequestUser) {
+    return this.emailService.createEmailConfirmation(req.user);
   }
-  @Post("user-email/emailConfirmation")
-  async createEmailConfirmation() {
-    return { message: "Hello Email" }
+  @Get("emailConfirmation/:id")
+  @UseGuards(JwtAuthGuard)
+  async getEmailConfirmation(@Request() req: RequestUser, @Param("id") id: string) {
+    return this.emailService.getEmailConfirmation(id, req.user);
   }
-  @Get("user-email/emailConfirmation/:id")
-  async getEmailConfirmation() {
-    return { message: "Hello Email" }
-  }
-  @Post("user-email/emailConfirmation/:id")
-  async verifyEmailConfirmation() {
-    return { message: "Hello Email" }
+  @UseGuards(JwtAuthGuard)
+  @Post("emailConfirmation/:id")
+  async verifyEmailConfirmation(@Request() req: RequestUser, @Param("id") id: string) {
+    return this.emailService.verifyEmailConfirmation(id, req.user);
   }
 
-  @Post("user-email/passwordReset")
-  async createPasswordReset() {
+  @Post("passwordReset")
+  async createPasswordReset(@Body() passwordResetDto: PasswordResetDto) {
+    console.log(passwordResetDto)
     return { message: "Hello Email" }
   }
-  @Get("user-email/passwordReset/:id")
+  @Get("passwordReset/:id")
   async getPasswordReset() {
     return { message: "Hello Email" }
   }
-  @Post("user-email/passwordReset/:id")
+  @Post("passwordReset/:id")
   async verifyPasswordReset() {
     return { message: "Hello Email" }
   }

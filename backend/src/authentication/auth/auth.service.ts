@@ -62,6 +62,9 @@ export class AuthService {
             }, null);
             return this.login(newUser);
         }
+        if (!user.emailVerified) {
+            await this.userService.setUserVerified(user.id);
+        }
         return this.login(user);
     }
 }
