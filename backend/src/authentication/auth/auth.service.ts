@@ -39,7 +39,10 @@ export class AuthService {
         const payload = { email: user.email, sub: user.id };
         return {
             // Calls Passport JWTStrategy
-            access_token: this.jwtService.sign(payload)
+            access_token: this.jwtService.sign(payload, {
+                issuer: 'Tailchro',
+                audience: process.env.BACKEND_URL
+            })
         }
     }
     async createUsername(username: string) {
