@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             ignoreExpiration: false,
             secretOrKey: process.env.JWT_SECRET || "thequickbrownfox",
             issuer: 'Tailchro',
-            // audience: process.env.BACKEND_URL
+            audience: process.env.BACKEND_URL
         });
     };
     async validate(payload: JwtPayload) {
