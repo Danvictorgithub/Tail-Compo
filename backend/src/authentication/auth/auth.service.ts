@@ -12,13 +12,13 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class AuthService {
     constructor(
-        private prisma: PrismaService,
+        private db: PrismaService,
         private jwtService: JwtService,
         private userService: UsersService
     ) { }
     // Authenticates email and Password
     async validateUser(email: string, password: string): Promise<any> {
-        const user = await this.prisma.user.findUnique({ where: { email } });
+        const user = await this.db.user.findUnique({ where: { email } });
         if (!user) {
             throw new UnauthorizedException('Invalid email or password');
         }
@@ -47,14 +47,14 @@ export class AuthService {
     }
     async createUsername(username: string) {
         const parsedUsername = username.split(' ').join('').toLowerCase();
-        const user = await this.prisma.user.findUnique({ where: { username: parsedUsername } });
+        const user = await this.db.user.findUnique({ where: { username: parsedUsername } });
         if (user) {
             return this.createUsername(`${parsedUsername}${Math.floor(Math.random() * 1000)}`);
         }
         return parsedUsername;
     }
     async googleAuthentication(payload: GoogleOAuthPayload) {
-        const user = await this.prisma.user.findUnique({ where: { email: payload.email } });
+        const user = await this.db.user.findUnique({ where: { email: payload.email } });
         if (!user) {
             const newUser = await this.userService.createVerified({
                 email: payload.email,

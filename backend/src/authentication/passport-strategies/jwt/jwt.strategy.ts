@@ -6,7 +6,7 @@ import { PrismaService } from "src/db/prisma/prisma.service";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly logger = new Logger(JwtStrategy.name);
-    constructor(private readonly prisma: PrismaService) {
+    constructor(private readonly db: PrismaService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         });
     };
     async validate(payload: JwtPayload) {
-        const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+        const user = await this.db.user.findUnique({ where: { id: payload.sub } });
         if (!user) {
             this.logger.warn(`User with ID ${payload.sub} not found`);
             throw new UnauthorizedException('User not found');
