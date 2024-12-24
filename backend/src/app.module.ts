@@ -9,22 +9,15 @@ import { S3Module } from './microservices/s3/s3.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { MailModule } from './lib/mail/mail.module';
+import { MailModule } from './configs/mail/mail.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CoreModule } from './configs/core/core.module';
 
 @Module({
   imports: [
     UsersModule, AuthModule, ProfilesModule,
-    MulterConfigModuleModule, S3Module, EventEmitterModule.forRoot(),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      serveRoot: '/public',
-      serveStaticOptions: {
-        setHeaders: (res) => {
-          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-        },
-      }
-    }),
-    MailModule,
+    MulterConfigModuleModule, S3Module, MailModule,
+    CoreModule,
   ],
   controllers: [AppController],
   providers: [AppService],
