@@ -40,6 +40,7 @@ export class ProfilesController {
     return this.profilesService.findOne(id);
   }
 
+  @UseInterceptors(FileInterceptor('file'))
   @UseGuards(JwtAuthGuard, ProfileOwnerGuard)
   @Patch(':id')
   update(
@@ -54,7 +55,7 @@ export class ProfilesController {
         validators: [
           new FileTypeValidator({ fileType: 'image/*' })]
       }))
-    file: Express.Multer.File,
+    file: Express.MulterS3.File,
     @Request() req: RequestUser
   ) {
     return this.profilesService.update(id, updateProfileDto, file, req.user);

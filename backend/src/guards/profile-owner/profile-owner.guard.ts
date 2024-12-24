@@ -9,11 +9,11 @@ export class ProfileOwnerGuard implements CanActivate {
   constructor(private db: PrismaService) { }
 
   async checkProfile(user: User, id: string) {
-    const profile = await this.db.profile.findFirst({ where: { userId: id } });
+    const profile = await this.db.profile.findUnique({ where: { id } });
     if (!profile) {
       throw new BadRequestException("Profile not found");
     }
-    return profile.id == user.id;
+    return profile.userId == user.id;
   }
   canActivate(
     context: ExecutionContext,
