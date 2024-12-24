@@ -8,7 +8,7 @@ export class EmailService {
     constructor(private db: PrismaService, private mailService: MailService) { }
     async createEmailConfirmation(user: User) {
         if (user.emailVerified) {
-            return new BadRequestException("User is already verified");
+            throw new BadRequestException("User is already verified");
         }
         await this.db.emailToken.deleteMany({ where: { userId: user.id, type: 'VERIFY_EMAIL' } })
         const emailToken = await this.db.emailToken.create({
@@ -34,7 +34,7 @@ export class EmailService {
             throw new BadRequestException('Token Expired');
         }
         if (user.emailVerified) {
-            return new BadRequestException("User is already verified");
+            throw new BadRequestException("User is already verified");
         }
         return { message: 'Email Token is Valid' };
     }
