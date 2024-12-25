@@ -1,9 +1,9 @@
-import Image from "next/image";
+// import Image from "next/image";
 import Header from "./component/Header";
 import { Icon } from "@iconify/react";
 import Footer from "./component/Footer";
 import Link from "next/link";
-export default function page() {
+export default function Home() {
   return (
     <main>
       <Header />
