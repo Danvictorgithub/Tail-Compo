@@ -82,6 +82,7 @@ export class UsersService {
     return newUser;
   }
   async setUserVerified(userId: string) {
+    await this.db.emailToken.deleteMany({ where: { userId, type: 'VERIFY_EMAIL' } })
     return this.db.user.update({ where: { id: userId }, data: { emailVerified: true } });
   }
 }
