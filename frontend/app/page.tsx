@@ -3,7 +3,7 @@ import Header from "./component/Header";
 import { Icon } from "@iconify/react";
 import Footer from "./component/Footer";
 import Link from "next/link";
-export default function Home() {
+export default function page() {
   return (
     <main>
       <Header />

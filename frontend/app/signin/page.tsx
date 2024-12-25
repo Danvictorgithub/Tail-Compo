@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-export default function signin() {
+export default function page() {
   return (
     <section className="bg-white ">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
