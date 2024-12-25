@@ -1,10 +1,11 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/db/prisma/prisma.service';
 
 @Injectable()
 export class MailService {
     private logo: string
-    constructor(private mailerServer: MailerService) {
+    constructor(private mailerServer: MailerService, private db: PrismaService) {
         this.logo = `${process.env.BACKEND_URL}/public/tailchro.png`
     }
     async sendEmailConfirmation(userEmail: string, confirmationUrl) {
@@ -21,7 +22,8 @@ export class MailService {
         })
         return { message: "Email Sent Successfuly" }
     }
-    async sendPasswordReset(userEmail: string, passwordResetUrl) {
+    async sendPasswordReset(userEmail: string, passwordResetUrl: string) {
+        const profile = await this.db.profile.findFirst({ where: { user: { email: userEmail } } });
         this.mailerServer.sendMail({
             to: userEmail,
             from: "tailchromailer",
@@ -29,6 +31,8 @@ export class MailService {
             template: 'passwordReset.ejs',
             context: {
                 logo: this.logo,
+                user_email: userEmail,
+                name: profile.name,
                 frontend_url: process.env.FRONTEND_URL,
                 password_reset_url: passwordResetUrl
             }

@@ -3,6 +3,7 @@ import { EmailService } from './email.service';
 import { JwtAuthGuard } from 'src/authentication/passport-strategies/jwt/jwt.auth.guard';
 import { RequestUser } from 'src/interfaces/requestUser';
 import { PasswordResetDto } from './dto/password-reset.dto';
+import { PasswordResetVerifyDto } from './dto/password-reset-verify.dto';
 
 @Controller('user-email')
 export class EmailController {
@@ -26,15 +27,17 @@ export class EmailController {
 
   @Post("passwordReset")
   async createPasswordReset(@Body() passwordResetDto: PasswordResetDto) {
-    console.log(passwordResetDto)
-    return { message: "Hello Email" }
+    return this.emailService.createPasswordReset(passwordResetDto);
   }
+
+  @UseGuards(JwtAuthGuard)
   @Get("passwordReset/:id")
-  async getPasswordReset() {
-    return { message: "Hello Email" }
+  async getPasswordReset(@Request() req: RequestUser, @Param("id") id: string) {
+    return this.emailService.getPasswordReset(id, req.user)
   }
   @Post("passwordReset/:id")
-  async verifyPasswordReset() {
-    return { message: "Hello Email" }
+  @UseGuards(JwtAuthGuard)
+  async verifyPasswordReset(@Body() passwordResetVerifyDto: PasswordResetVerifyDto, @Request() req: RequestUser, @Param("id") id: string) {
+    return this.emailService.verifyPasswordReset(id, passwordResetVerifyDto, req.user)
   }
 }

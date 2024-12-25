@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { MailService } from '../../lib/mail/mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { PrismaModule } from 'src/db/prisma/prisma.module';
 
 @Module({
     imports: [
+        PrismaModule,
         MailerModule.forRoot({
             transport: (process.env.PRODUCTION != 'true') ? 'smtp://127.0.0.1:1025' : { // smtp://127.0.0.1:1025, is used for mailcatcher (ruby gem)
                 host: process.env.SMTP_HOST,
@@ -26,9 +28,7 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
             },
         }),
     ],
-    providers: [MailService,
-
-    ],
+    providers: [MailService],
     exports: [MailService]
 })
 export class MailModule {
