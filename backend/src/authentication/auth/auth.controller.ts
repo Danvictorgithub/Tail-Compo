@@ -7,7 +7,9 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleOAuthGuard } from '../passport-strategies/google/google.auth.guard';
 import { RequestUserGoogle } from 'src/interfaces/requestUserGoogle';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService, private readonly usersService: UsersService) { }

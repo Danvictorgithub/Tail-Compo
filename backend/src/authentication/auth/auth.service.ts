@@ -5,7 +5,6 @@ import { User } from '@prisma/client';
 // import * as bcrypt from "bcrypt";
 import * as argon2 from "argon2";
 import { PrismaService } from 'src/db/prisma/prisma.service';
-import { GoogleOAuthGuard } from '../passport-strategies/google/google.auth.guard';
 import { GoogleOAuthPayload } from 'src/interfaces/googleOAuthPayload';
 import { UsersService } from 'src/users/users.service';
 
