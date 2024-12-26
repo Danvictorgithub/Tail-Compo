@@ -2,10 +2,13 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Icon } from "@iconify/react";
 export default function Page() {
+  const error = useSearchParams().get("error");
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [toggle, setToggle] = useState<boolean>(true);
   if (status == "authenticated") {
     console.log(session);
   }
@@ -82,14 +85,28 @@ export default function Page() {
                 />
               </svg>
             </span>
-
             <input
               onChange={handleChange}
               name="password"
-              type="password"
+              type={toggle ? "password" : "text"}
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Password"
             />
+            <div className="absolute right-4">
+              {toggle ? (
+                <Icon
+                  icon="mdi:show"
+                  className="text-xl hover:text-gray-500 duration-200"
+                  onClick={() => setToggle(!toggle)}
+                ></Icon>
+              ) : (
+                <Icon
+                  onClick={() => setToggle(!toggle)}
+                  icon="mdi:hide"
+                  className="text-xl hover:text-gray-500 duration-200"
+                ></Icon>
+              )}
+            </div>
           </div>
 
           <div className="mt-6">
@@ -99,6 +116,13 @@ export default function Page() {
             >
               Sign in
             </button>
+            <p className="text-center mt-4 text-sm text-red-500">
+              {error
+                ? error == "Unauthorized"
+                  ? "Email and password must be provided"
+                  : error
+                : " "}
+            </p>
 
             <p className="mt-4 text-center text-gray-600 ">or sign in with</p>
 
