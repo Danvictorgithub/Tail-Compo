@@ -1,4 +1,4 @@
-import { Controller, Post, Get, UseGuards, Request, ForbiddenException, Body, ValidationPipe, UploadedFile, ParseFilePipe, FileTypeValidator, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Get, UseGuards, Request, ForbiddenException, Body, ValidationPipe, UploadedFile, ParseFilePipe, FileTypeValidator, UseInterceptors, Response } from '@nestjs/common';
 import { LocalAuthGuard } from '../passport-strategies/local/local.auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../passport-strategies/jwt/jwt.auth.guard';
@@ -6,7 +6,6 @@ import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleOAuthGuard } from '../passport-strategies/google/google.auth.guard';
-import { RequestUser } from 'src/interfaces/requestUser';
 import { RequestUserGoogle } from 'src/interfaces/requestUserGoogle';
 
 @Controller('auth')
@@ -55,7 +54,9 @@ export class AuthController {
 
     @Get('google/callback')
     @UseGuards(GoogleOAuthGuard)
-    googleAuthRedirect(@Request() req: RequestUserGoogle) {
-        return this.authService.googleAuthentication(req.user);
+    async googleAuthRedirect(@Request() req: RequestUserGoogle, @Response() res) {
+        const token = await this.authService.googleAuthentication(req.user);
+        const frontendUrl = `${process.env.FRONTEND_URL}/auth/callback?access_token=${token.access_token}`;
+        return res.redirect(frontendUrl);
     }
 }
