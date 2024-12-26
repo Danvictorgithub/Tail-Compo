@@ -1,11 +1,37 @@
+"use client";
 import Link from "next/link";
-import React from "react";
-
-export default function page() {
+import React, { useEffect, useState } from "react";
+import { useSession, signIn } from "next-auth/react";
+export default function Page() {
+  const { data: session, status } = useSession();
+  if (status == "authenticated") {
+    console.log(session);
+  }
+  const [fData, setFData] = useState({
+    email: "",
+    password: "",
+  });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFData({
+      ...fData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await signIn("credentials", {
+      redirect: false,
+      email: fData.email,
+      password: fData.password,
+    });
+  };
+  useEffect(() => {
+    console.log(fData);
+  }, [fData]);
   return (
     <section className="bg-white ">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
-        <form className="w-full max-w-md">
+        <form className="w-full max-w-md" onSubmit={handleSubmit}>
           <Link href="/">
             <img className="w-auto h-7 sm:h-12" src="/tailchro.png" alt="" />
           </Link>
@@ -33,6 +59,8 @@ export default function page() {
             </span>
 
             <input
+              onChange={handleChange}
+              name="email"
               type="email"
               className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Email address"
@@ -58,6 +86,8 @@ export default function page() {
             </span>
 
             <input
+              onChange={handleChange}
+              name="password"
               type="password"
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Password"
@@ -65,7 +95,10 @@ export default function page() {
           </div>
 
           <div className="mt-6">
-            <button className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-cyan-500 rounded-lg hover:bg-cyan-400 focus:outline-none focus:ring focus:ring-cyan-300 focus:ring-opacity-50">
+            <button
+              type="submit"
+              className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-cyan-500 rounded-lg hover:bg-cyan-400 focus:outline-none focus:ring focus:ring-cyan-300 focus:ring-opacity-50"
+            >
               Sign in
             </button>
 
