@@ -1,9 +1,15 @@
 // import Image from "next/image";
+"use client";
 import Header from "./component/Header";
 import { Icon } from "@iconify/react";
 import Footer from "./component/Footer";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 export default function Home() {
+  const { data, status } = useSession();
+  if (status === "authenticated") {
+    console.log(data);
+  }
   return (
     <main>
       <Header />

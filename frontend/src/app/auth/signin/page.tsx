@@ -20,7 +20,6 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await signIn("credentials", {
-      redirect: false,
       email: fData.email,
       password: fData.password,
     });
@@ -132,7 +131,7 @@ export default function Page() {
 
             <div className="mt-6 text-center ">
               <Link
-                href="/signup"
+                href="/auth/signup"
                 className="text-sm text-cyan-500 hover:underline "
               >
                 Don’t have an account yet? Sign up

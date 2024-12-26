@@ -20,7 +20,7 @@ export default function Header() {
           </div>
         </div>
         <div>
-          <Link href="/signin">
+          <Link href="/auth/signin">
             <button className="flex gap-2 items-center">
               <Icon
                 icon="solar:login-2-bold-duotone"
