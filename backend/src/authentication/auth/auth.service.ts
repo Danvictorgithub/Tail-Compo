@@ -37,8 +37,13 @@ export class AuthService {
     // Returns JWT Bearer Token
     async login(user: User) {
         const payload = { email: user.email, sub: user.id };
+        const profile = await this.db.profile.findUnique({ where: { userId: user.id } });
         return {
             // Calls Passport JWTStrategy
+            email: user.email,
+            id: user.id,
+            image: profile.image,
+            name: profile.name,
             access_token: this.jwtService.sign(payload, {
                 issuer: 'Tailchro',
                 audience: process.env.BACKEND_URL
