@@ -1,6 +1,5 @@
 import NextAuth, { User } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import Google from "next-auth/providers/google";
 
 const handler = NextAuth({
     providers: [
@@ -26,29 +25,29 @@ const handler = NextAuth({
                     return res;
                 }
 
-                const res: {
-                    email: string,
-                    id: string,
-                    image: string,
-                    access_token: string
-                    error?: string
-                } = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(credentials)
-                }).then(response => response.json());
-                if (res.error) {
-                    throw new Error(res.error);
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Authentication failed');
                 }
+
+                const res: {
+                    email: string,
+                    id: string,
+                    image: string,
+                    access_token: string,
+                    error?: string
+                } = await response.json();
                 return res;
             },
         }),
-        Google({
-            clientId: process.env.GOOGLE_CLIENT_ID as string,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-        })
     ],
     session: {
         strategy: 'jwt'
@@ -81,6 +80,7 @@ const handler = NextAuth({
         },
     },
     pages: {
+        error: '/auth/signin?'
     }
 })
 
