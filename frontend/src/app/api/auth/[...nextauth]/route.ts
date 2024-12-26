@@ -1,14 +1,31 @@
 import NextAuth, { User } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import Google from "next-auth/providers/google";
 
 const handler = NextAuth({
     providers: [
         Credentials({
             credentials: {
                 email: { label: "Email", type: "text" },
-                password: { label: "Password", type: "password" }
+                password: { label: "Password", type: "password" },
+                access_token: { label: "Access Token", type: "text" },
             },
             async authorize(credentials) {
+                if (credentials?.access_token) { // From Google OAuth 2.0
+                    const res: User = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${credentials.access_token}`
+                        }
+                    }).then(response => response.json()).catch(() => null);
+                    if (!res) {
+                        throw new Error("Invalid Token");
+                    }
+                    res.id = res.sub as string;
+                    res.access_token = credentials.access_token;
+                    return res;
+                }
+
                 const res: {
                     email: string,
                     id: string,
@@ -27,6 +44,10 @@ const handler = NextAuth({
                 }
                 return res;
             },
+        }),
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         })
     ],
     session: {
@@ -47,16 +68,12 @@ const handler = NextAuth({
                 return token;
             }
             else {
-                token.error = "RefreshTokenError";
-                console.error("Token is invalid")
                 throw new Error("Invalid Token");
-                return token;
             }
         },
         async session({ session, token }) {
             session.user.id = token.sub as string
             session.access_token = token.access_token as string
-            session.error = token.error as "RefreshTokenError"
             return session;
         },
         async redirect({ baseUrl }) {

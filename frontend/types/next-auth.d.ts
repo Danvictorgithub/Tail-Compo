@@ -24,6 +24,7 @@ declare module "next-auth" {
     interface User {
         email: string;
         id: string;
+        sub?: string;
         image: string;
         access_token: string;
         // error?: string

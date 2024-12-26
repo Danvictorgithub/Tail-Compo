@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 export default function Page() {
+  const router = useRouter();
   const { data: session, status } = useSession();
   if (status == "authenticated") {
     console.log(session);
@@ -24,9 +26,6 @@ export default function Page() {
       password: fData.password,
     });
   };
-  useEffect(() => {
-    console.log(fData);
-  }, [fData]);
   return (
     <section className="bg-white ">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
@@ -126,7 +125,17 @@ export default function Page() {
                 />
               </svg>
 
-              <span className="mx-2">Continue with Google</span>
+              <button
+                onClick={() =>
+                  router.push(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`
+                  )
+                }
+                type="button"
+                className="mx-2"
+              >
+                Continue with Google
+              </button>
             </a>
 
             <div className="mt-6 text-center ">
