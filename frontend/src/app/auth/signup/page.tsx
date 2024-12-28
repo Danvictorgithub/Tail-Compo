@@ -6,9 +6,18 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Icon } from "@iconify/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 interface UserSignUp {
-  image: File;
+  image: FileList;
   username: string;
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -16,6 +25,7 @@ interface UserSignUp {
 
 export default function Page() {
   const [toggle, setToggle] = useState<boolean>(true);
+  const [showDialog, setShowDialog] = useState<boolean>(false);
   const router = useRouter();
   const {
     register,
@@ -27,32 +37,40 @@ export default function Page() {
     mode: "onChange",
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [dialogMessage, setDialogMessage] = useState<string>("");
   const [fileName, setFileName] = useState<string | null>(null);
-  const password = watch("password");
-
   const { status } = useSession();
+  const { toast } = useToast();
   if (status === "authenticated") {
     router.push("/");
   }
   async function onSubmit(data: UserSignUp) {
     const formData = new FormData();
     if (data.image) {
-      formData.append("image", data.image);
+      formData.append("file", data.image[0]);
     }
     formData.append("username", data.username);
+    formData.append("name", data.name);
     formData.append("email", data.email);
     formData.append("password", data.password);
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/signup`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`,
       {
         method: "POST",
         body: formData,
       }
     );
     if (req.ok) {
-      const res = await req.json();
-      console.log(res);
-      alert("Created new User");
+      toast({
+        title: "Account created",
+        description: "Please login your account",
+        duration: 5000,
+      });
+      router.push("/auth/signin");
+    } else {
+      const errorRes = await req.json();
+      setShowDialog(true);
+      setDialogMessage(errorRes.message || "An error occurred");
     }
   }
   return (
@@ -91,11 +109,46 @@ export default function Page() {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+            </span>
+            <input
+              {...register("email", {
+                required: {
+                  value: true,
+                  message: "Email Address is required",
+                },
+              })}
+              type="email"
+              className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
+              placeholder="Email address"
+            />
+          </div>
+
+          {errors.email?.message ? (
+            <p className="text-sm text-gray-500 mt-2">
+              * {errors.email.message}
+            </p>
+          ) : null}
+
+          <div className="relative flex items-center mt-6">
+            <span className="absolute">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6 mx-3 text-gray-300 "
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
             </span>
-
             <input
               type="text"
               {...register("username", {
@@ -122,6 +175,40 @@ export default function Page() {
             </p>
           ) : null}
 
+          <div className="relative flex items-center mt-6">
+            <span className="absolute">
+              <Icon
+                icon="mingcute:profile-fill"
+                className="mx-3 text-gray-300"
+                width="24"
+                height="24"
+              />
+            </span>
+            <input
+              type="text"
+              {...register("name", {
+                required: {
+                  value: true,
+                  message: "Name is required",
+                },
+                minLength: {
+                  value: 4,
+                  message: "Name must be at least 4 characters long",
+                },
+                maxLength: {
+                  value: 128,
+                  message: "Name must be at most 32 characters long",
+                },
+              })}
+              className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
+              placeholder="Name: Juan Dela Cruz ex."
+            />
+          </div>
+          {errors.name?.message ? (
+            <p className="text-sm text-gray-500 mt-2">
+              * {errors.name.message}
+            </p>
+          ) : null}
           <label
             htmlFor="dropzone-file"
             className="flex items-center px-3 py-3 mx-auto mt-6 text-center bg-white border-2 border-dashed rounded-lg cursor-pointer"
@@ -189,7 +276,6 @@ export default function Page() {
                   },
                 },
               })}
-              // onChange={onImageChange}
             />
           </label>
           {errors.image && (
@@ -209,43 +295,6 @@ export default function Page() {
               />
             </div>
           )}
-
-          <div className="relative flex items-center mt-6">
-            <span className="absolute">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6 mx-3 text-gray-300 "
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            </span>
-
-            <input
-              {...register("email", {
-                required: {
-                  value: true,
-                  message: "Email Address is required",
-                },
-              })}
-              type="email"
-              className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
-              placeholder="Email address"
-            />
-          </div>
-          {errors.email?.message ? (
-            <p className="text-sm text-gray-500 mt-2">
-              * {errors.email.message}
-            </p>
-          ) : null}
-
           <div className="relative flex items-center mt-4">
             <span className="absolute">
               <svg
@@ -324,7 +373,7 @@ export default function Page() {
               {...register("confirmPassword", {
                 required: "Confirm Password is required",
                 validate: (value) =>
-                  value === password || "Passwords do not match",
+                  value === watch("password") || "Passwords do not match",
               })}
               type={toggle ? "password" : "text"}
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -367,6 +416,18 @@ export default function Page() {
           </div>
         </form>
       </div>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+            <DialogDescription>
+              {dialogMessage}
+              {/* This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers. */}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

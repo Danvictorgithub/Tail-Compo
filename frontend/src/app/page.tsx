@@ -4,12 +4,15 @@ import Header from "./component/Header";
 import { Icon } from "@iconify/react";
 import Footer from "./component/Footer";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 export default function Home() {
-  const { data, status } = useSession();
-  if (status === "authenticated") {
-    console.log(data);
-  }
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      console.log(session);
+    }
+  }, [status]);
   return (
     <main>
       <Header />

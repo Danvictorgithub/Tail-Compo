@@ -47,14 +47,11 @@ const handler = NextAuth({
           throw new Error(error.message || "Authentication failed");
         }
 
-        const res: {
-          email: string;
-          id: string;
-          image: string;
-          access_token: string;
-          error?: string;
-        } = await response.json();
-        return res;
+        const res: User = await response.json();
+        if (res) {
+          return res;
+        }
+        return null;
       },
     }),
   ],
@@ -66,6 +63,8 @@ const handler = NextAuth({
       if (user) {
         // This is for newly logged in user
         token.access_token = user.access_token;
+        token.username = user.username;
+        token.emailVerified = user.emailVerified;
       }
       const res: User = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/`,
@@ -86,6 +85,8 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       session.user.id = token.sub as string;
+      session.user.emailVerified = token.emailVerified as boolean;
+      session.user.username = token.username as string;
       session.access_token = token.access_token as string;
       return session;
     },
