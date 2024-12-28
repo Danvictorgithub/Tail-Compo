@@ -29,7 +29,7 @@ export class AuthService {
     if (!result) {
       throw new UnauthorizedException('Invalid email or password');
     }
-
+    // eslint-disable-next-line
     const { password: userPassword, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
@@ -40,9 +40,11 @@ export class AuthService {
     });
     const payload = {
       email: user.email,
+      username: user.username,
       sub: user.id,
       name: profile.name,
       image: profile.image,
+      emailVerified: user.emailVerified,
     };
     return {
       // Calls Passport JWTStrategy
@@ -50,6 +52,8 @@ export class AuthService {
       id: user.id,
       image: profile.image,
       name: profile.name,
+      username: user.username,
+      emailVerified: user.emailVerified,
       access_token: this.jwtService.sign(payload, {
         issuer: 'Tailchro',
         audience: process.env.BACKEND_URL,
