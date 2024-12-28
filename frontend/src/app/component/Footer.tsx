@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 export default function Footer() {
@@ -5,7 +6,14 @@ export default function Footer() {
     <footer className="bg-white ">
       <div className="container flex flex-col items-center justify-between p-6 mx-auto space-y-4 sm:space-y-0 sm:flex-row">
         <a href="#">
-          <img className="w-auto h-7" src="/tailchro.png" alt="" />
+          <Image
+            width="0"
+            height="0"
+            sizes="100vw"
+            className="w-auto h-7"
+            src="/tailchro.png"
+            alt=""
+          />
         </a>
 
         <p className="text-sm text-gray-600 ">

@@ -1,5 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -13,10 +14,22 @@ interface UserSignUp {
   confirmPassword: string;
 }
 
-export default function page() {
+export default function Page() {
   const router = useRouter();
-  const { register, handleSubmit } = useForm<UserSignUp>();
-  const { data: session, status } = useSession();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<UserSignUp>({
+    reValidateMode: "onChange",
+    mode: "onChange",
+  });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const password = watch("password");
+
+  const { status } = useSession();
   if (status === "authenticated") {
     router.push("/");
   }
@@ -27,9 +40,16 @@ export default function page() {
     <section className="bg-white ">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
         <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex justify-center mx-auto">
-            <Link href="/">
-              <img className="w-auto h-7 sm:h-12" src="/tailchro.png" alt="" />
+          <div className="flex justify-center mx-auto mb-12">
+            <Link href="/" className="fixed">
+              <Image
+                width="0"
+                height="0"
+                sizes="100vw"
+                className="w-auto h-7 sm:h-12"
+                src="/tailchro.png"
+                alt="Logo"
+              />
             </Link>
           </div>
 
@@ -61,13 +81,24 @@ export default function page() {
               type="text"
               {...register("username", {
                 required: true,
-                minLength: 4,
-                maxLength: 32,
+                minLength: {
+                  value: 4,
+                  message: "Username must be at least 4 characters long",
+                },
+                maxLength: {
+                  value: 32,
+                  message: "Username must be at most 32 characters long",
+                },
               })}
               className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Username"
             />
           </div>
+          {errors.username?.message ? (
+            <p className="text-sm text-gray-500 mt-2">
+              * {errors.username.message}
+            </p>
+          ) : null}
 
           <label
             htmlFor="dropzone-file"
@@ -75,7 +106,7 @@ export default function page() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6 text-gray-300 "
+              className="w-6 h-6 text-gray-300"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -88,10 +119,57 @@ export default function page() {
               />
             </svg>
 
-            <h2 className="mx-3 text-gray-400">Profile Photo</h2>
+            <h2 className="mx-3 text-gray-400">Profile Photo: {fileName}</h2>
 
-            <input id="dropzone-file" type="file" className="hidden" />
+            <input
+              id="dropzone-file"
+              type="file"
+              className="hidden"
+              {...register("image", {
+                validate: {
+                  lessThan10MB: (
+                    files: any // eslint-disable-line
+                  ) => files[0].size < 10 * 1024 * 1024 || "Max 5MB",
+                  // eslint-disable-next-line
+                  acceptedFormats: (files: any) => {
+                    setFileName(files[0].name);
+                    if (files[0] && files[0].type.startsWith("image/")) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setImagePreview(reader.result as string);
+                      };
+                      reader.readAsDataURL(files[0]);
+                    } else {
+                      setImagePreview(null);
+                    }
+                    return (
+                      ["image/jpeg", "image/png", "image/gif"].includes(
+                        files[0].type
+                      ) || "Only PNG, JPEG e GIF"
+                    );
+                  },
+                },
+              })}
+              // onChange={onImageChange}
+            />
           </label>
+          {errors.image && (
+            <p className="text-sm text-red-500 mt-2">
+              * {errors.image.message}
+            </p>
+          )}
+          {imagePreview && (
+            <div className="mt-4">
+              <Image
+                src={imagePreview}
+                alt="Profile Preview"
+                width="0"
+                height="0"
+                sizes="100vw"
+                className="w-32 h-32 rounded-full mx-auto"
+              />
+            </div>
+          )}
 
           <div className="relative flex items-center mt-6">
             <span className="absolute">
@@ -112,11 +190,22 @@ export default function page() {
             </span>
 
             <input
+              {...register("email", {
+                required: {
+                  value: true,
+                  message: "Email Address is required",
+                },
+              })}
               type="email"
               className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Email address"
             />
           </div>
+          {errors.email?.message ? (
+            <p className="text-sm text-gray-500 mt-2">
+              * {errors.email.message}
+            </p>
+          ) : null}
 
           <div className="relative flex items-center mt-4">
             <span className="absolute">
@@ -140,8 +229,39 @@ export default function page() {
               type="password"
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Password"
+              {...register("password", {
+                required: "Password is required",
+                validate: (value) => {
+                  const errors = [];
+                  if (value.length < 8) {
+                    errors.push("Password must be at least 8 characters long");
+                  }
+                  if (!/[a-z]/.test(value)) {
+                    errors.push(
+                      "Password must contain at least one lowercase letter"
+                    );
+                  }
+                  if (!/[A-Z]/.test(value)) {
+                    errors.push(
+                      "Password must contain at least one uppercase letter"
+                    );
+                  }
+                  if (!/\d/.test(value)) {
+                    errors.push("Password must contain at least one number");
+                  }
+                  if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                    errors.push("Password must contain at least one symbol");
+                  }
+                  return errors.length > 0 ? errors.join(", ") : true;
+                },
+              })}
             />
           </div>
+          {errors.password?.message ? (
+            <p className="text-sm text-gray-500 mt-2">
+              * {errors.password.message}
+            </p>
+          ) : null}
 
           <div className="relative flex items-center mt-4">
             <span className="absolute">
@@ -162,12 +282,21 @@ export default function page() {
             </span>
 
             <input
+              {...register("confirmPassword", {
+                required: "Confirm Password is required",
+                validate: (value) =>
+                  value === password || "Passwords do not match",
+              })}
               type="password"
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Confirm Password"
             />
           </div>
-
+          {errors.confirmPassword?.message ? (
+            <p className="text-sm text-gray-500 mt-2">
+              * {errors.confirmPassword.message}
+            </p>
+          ) : null}
           <div className="mt-6">
             <button className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-cyan-500 rounded-lg hover:bg-cyan-400 focus:outline-none focus:ring focus:ring-cyan-300 focus:ring-opacity-50">
               Sign Up

@@ -1,5 +1,6 @@
 import React from "react";
 import Header from "../component/Header";
+import Image from "next/image";
 
 export default function page() {
   return (
@@ -35,13 +36,19 @@ export default function page() {
               .map((_, index) => (
                 <div key={index}>
                   <div className="relative">
-                    <img
+                    <Image
+                      width="0"
+                      height="0"
+                      sizes="100vw"
                       className="object-cover object-center w-full h-64 rounded-lg lg:h-80"
                       src="https://images.unsplash.com/photo-1624996379697-f01d168b1a52?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHx8&auto=format&fit=crop&w=1470&q=80"
                       alt=""
                     />
                     <div className="absolute bottom-0 flex p-3 bg-white">
-                      <img
+                      <Image
+                        width="0"
+                        height="0"
+                        sizes="100vw"
                         className="object-cover object-center w-10 h-10 rounded-full"
                         src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHx8&auto=format&fit=crop&w=1470&q=80"
                         alt=""

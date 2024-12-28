@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@iconify/react";
+import Image from "next/image";
 export default function Page() {
   const error = useSearchParams().get("error");
   const router = useRouter();
@@ -34,7 +35,14 @@ export default function Page() {
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
         <form className="w-full max-w-md" onSubmit={handleSubmit}>
           <Link href="/">
-            <img className="w-auto h-7 sm:h-12" src="/tailchro.png" alt="" />
+            <Image
+              width="0"
+              height="0"
+              sizes="100vw"
+              className="w-auto h-7 sm:h-12"
+              src="/tailchro.png"
+              alt=""
+            />
           </Link>
 
           <h1 className="mt-3 text-2xl font-semibold text-gray-800 capitalize sm:text-3xl ">
