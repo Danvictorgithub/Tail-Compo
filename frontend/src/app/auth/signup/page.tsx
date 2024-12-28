@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-
+import { Icon } from "@iconify/react";
 interface UserSignUp {
   image: File;
   username: string;
@@ -15,6 +15,7 @@ interface UserSignUp {
 }
 
 export default function Page() {
+  const [toggle, setToggle] = useState<boolean>(true);
   const router = useRouter();
   const {
     register,
@@ -33,8 +34,26 @@ export default function Page() {
   if (status === "authenticated") {
     router.push("/");
   }
-  function onSubmit(data: UserSignUp) {
-    console.log(data);
+  async function onSubmit(data: UserSignUp) {
+    const formData = new FormData();
+    if (data.image) {
+      formData.append("image", data.image);
+    }
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/signup`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    if (req.ok) {
+      const res = await req.json();
+      console.log(res);
+      alert("Created new User");
+    }
   }
   return (
     <section className="bg-white ">
@@ -80,7 +99,10 @@ export default function Page() {
             <input
               type="text"
               {...register("username", {
-                required: true,
+                required: {
+                  value: true,
+                  message: "Username is required",
+                },
                 minLength: {
                   value: 4,
                   message: "Username must be at least 4 characters long",
@@ -129,24 +151,41 @@ export default function Page() {
                 validate: {
                   lessThan10MB: (
                     files: any // eslint-disable-line
-                  ) => files[0].size < 10 * 1024 * 1024 || "Max 5MB",
+                  ) => {
+                    if (!files[0]) {
+                      return true;
+                    } else {
+                      return (
+                        (files[0] && files[0].size < 10 * 1024 * 1024) ||
+                        "Max 5MB"
+                      );
+                    }
+                  },
                   // eslint-disable-next-line
                   acceptedFormats: (files: any) => {
-                    setFileName(files[0].name);
-                    if (files[0] && files[0].type.startsWith("image/")) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        setImagePreview(reader.result as string);
-                      };
-                      reader.readAsDataURL(files[0]);
+                    if (!files[0]) {
+                      return true;
+                    }
+                    if (files[0]) {
+                      setFileName(files[0].name);
+                      if (files[0].type.startsWith("image/")) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setImagePreview(reader.result as string);
+                        };
+                        reader.readAsDataURL(files[0]);
+                      } else {
+                        setImagePreview(null);
+                      }
+                      return (
+                        ["image/jpeg", "image/png", "image/gif"].includes(
+                          files[0].type
+                        ) || "Only PNG, JPEG e GIF"
+                      );
                     } else {
                       setImagePreview(null);
+                      return "No file selected";
                     }
-                    return (
-                      ["image/jpeg", "image/png", "image/gif"].includes(
-                        files[0].type
-                      ) || "Only PNG, JPEG e GIF"
-                    );
                   },
                 },
               })}
@@ -226,7 +265,7 @@ export default function Page() {
             </span>
 
             <input
-              type="password"
+              type={toggle ? "password" : "text"}
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Password"
               {...register("password", {
@@ -287,10 +326,25 @@ export default function Page() {
                 validate: (value) =>
                   value === password || "Passwords do not match",
               })}
-              type="password"
+              type={toggle ? "password" : "text"}
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Confirm Password"
             />
+            <div className="absolute right-4">
+              {toggle ? (
+                <Icon
+                  icon="mdi:show"
+                  className="text-xl hover:text-gray-500 duration-200"
+                  onClick={() => setToggle(!toggle)}
+                ></Icon>
+              ) : (
+                <Icon
+                  onClick={() => setToggle(!toggle)}
+                  icon="mdi:hide"
+                  className="text-xl hover:text-gray-500 duration-200"
+                ></Icon>
+              )}
+            </div>
           </div>
           {errors.confirmPassword?.message ? (
             <p className="text-sm text-gray-500 mt-2">
@@ -302,7 +356,7 @@ export default function Page() {
               Sign Up
             </button>
 
-            <div className="mt-6 text-center ">
+            <div className="mt-6 text-center">
               <Link
                 href="signin"
                 className="text-sm text-cyan-500 hover:underline "
