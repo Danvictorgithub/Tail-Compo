@@ -2,8 +2,8 @@ import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsOptional,
-  IsString,
   IsStrongPassword,
+  IsUrl,
   Length,
 } from 'class-validator';
 
@@ -13,10 +13,11 @@ export class CreateUserDto {
   @Length(4, 32)
   @Transform(({ value }) => value.toLowerCase())
   username: string;
-  @Length(4, 32)
+  @Length(4, 128)
   name: string;
   @IsStrongPassword()
   password: string;
   @IsOptional()
+  @IsUrl()
   image: string;
 }
