@@ -1,11 +1,32 @@
+"use client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+
+interface UserSignUp {
+  image: File;
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 export default function page() {
+  const router = useRouter();
+  const { register, handleSubmit } = useForm<UserSignUp>();
+  const { data: session, status } = useSession();
+  if (status === "authenticated") {
+    router.push("/");
+  }
+  function onSubmit(data: UserSignUp) {
+    console.log(data);
+  }
   return (
     <section className="bg-white ">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
-        <form className="w-full max-w-md">
+        <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex justify-center mx-auto">
             <Link href="/">
               <img className="w-auto h-7 sm:h-12" src="/tailchro.png" alt="" />
@@ -38,6 +59,11 @@ export default function page() {
 
             <input
               type="text"
+              {...register("username", {
+                required: true,
+                minLength: 4,
+                maxLength: 32,
+              })}
               className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Username"
             />
@@ -45,7 +71,7 @@ export default function page() {
 
           <label
             htmlFor="dropzone-file"
-            className="flex items-center px-3 py-3 mx-auto mt-6 text-center bg-white border-2 border-dashed rounded-lg cursor-pointer  "
+            className="flex items-center px-3 py-3 mx-auto mt-6 text-center bg-white border-2 border-dashed rounded-lg cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
