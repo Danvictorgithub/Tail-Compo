@@ -11,11 +11,15 @@ import { CoreModule } from './configs/core/core.module';
 
 @Module({
   imports: [
-    UsersModule, AuthModule, ProfilesModule,
-    MulterConfigModuleModule, S3Module, MailModule,
+    UsersModule,
+    AuthModule,
+    ProfilesModule,
+    MulterConfigModuleModule,
+    S3Module,
+    MailModule,
     CoreModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

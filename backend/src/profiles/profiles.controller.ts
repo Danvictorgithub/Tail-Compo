@@ -1,4 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, ValidationPipe, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  ValidationPipe,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  FileTypeValidator,
+} from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -10,22 +25,22 @@ import { ProfileOwnerGuard } from 'src/guards/profile-owner/profile-owner.guard'
 
 @Controller('profiles')
 export class ProfilesController {
-  constructor(private readonly profilesService: ProfilesService) { }
+  constructor(private readonly profilesService: ProfilesService) {}
 
   @UseInterceptors(FileInterceptor('file'))
   @Post()
   @UseGuards(JwtAuthGuard)
   create(
-    @Body(
-    ) createProfileDto: CreateProfileDto,
+    @Body() createProfileDto: CreateProfileDto,
     @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: false,
-        validators: [
-          new FileTypeValidator({ fileType: 'image/*' })]
-      }))
+        validators: [new FileTypeValidator({ fileType: 'image/*' })],
+      }),
+    )
     file: Express.MulterS3.File,
-    @Request() req: RequestUser) {
+    @Request() req: RequestUser,
+  ) {
     return this.profilesService.create(createProfileDto, file, req.user);
   }
 
@@ -47,16 +62,18 @@ export class ProfilesController {
     @Param('id') id: string,
     @Body(
       new ValidationPipe({
-        skipUndefinedProperties: true
-      })) updateProfileDto: UpdateProfileDto,
+        skipUndefinedProperties: true,
+      }),
+    )
+    updateProfileDto: UpdateProfileDto,
     @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: false,
-        validators: [
-          new FileTypeValidator({ fileType: 'image/*' })]
-      }))
+        validators: [new FileTypeValidator({ fileType: 'image/*' })],
+      }),
+    )
     file: Express.MulterS3.File,
-    @Request() req: RequestUser
+    @Request() req: RequestUser,
   ) {
     return this.profilesService.update(id, updateProfileDto, file, req.user);
   }

@@ -10,8 +10,13 @@ import { EmailModule } from './email/email.module';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService, ProfilesService, UserCreatedService, UserResetPasswordService],
+  providers: [
+    UsersService,
+    ProfilesService,
+    UserCreatedService,
+    UserResetPasswordService,
+  ],
   imports: [PrismaModule, S3Module, EmailModule],
-  exports: [UsersService]
+  exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

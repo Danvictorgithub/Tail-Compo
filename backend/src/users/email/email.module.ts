@@ -10,8 +10,14 @@ import { S3Service } from 'src/microservices/s3/s3.service';
 
 @Module({
   controllers: [EmailController],
-  providers: [EmailService, MailService, UsersService, ProfilesService, S3Service],
-  imports: [PrismaModule, MailModule,],
-  exports: [EmailService]
+  providers: [
+    EmailService,
+    MailService,
+    UsersService,
+    ProfilesService,
+    S3Service,
+  ],
+  imports: [PrismaModule, MailModule],
+  exports: [EmailService],
 })
-export class EmailModule { }
+export class EmailModule {}

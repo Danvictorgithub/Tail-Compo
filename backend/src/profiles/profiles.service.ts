@@ -8,13 +8,23 @@ import { S3Service } from 'src/microservices/s3/s3.service';
 
 @Injectable()
 export class ProfilesService {
-  constructor(private db: PrismaService, private s3Service: S3Service) { }
-  async create(createProfileDto: CreateProfileDto, file: Express.MulterS3.File, user: User,) {
+  constructor(
+    private db: PrismaService,
+    private s3Service: S3Service,
+  ) {}
+  async create(
+    createProfileDto: CreateProfileDto,
+    file: Express.MulterS3.File,
+    user: User,
+  ) {
     // Generates Intiials Image from DiceBear if no image uploaded already
-    createProfileDto.image = file ?
-      getSupabasePublicUrl(file.location) :
-      createProfileDto.image || `https://api.dicebear.com/9.x/initials/svg?seed=${createProfileDto.name}`;
-    const newProfile = await this.db.profile.create({ data: { ...createProfileDto, user: { connect: { id: user.id } } } });
+    createProfileDto.image = file
+      ? getSupabasePublicUrl(file.location)
+      : createProfileDto.image ||
+        `https://api.dicebear.com/9.x/initials/svg?seed=${createProfileDto.name}`;
+    const newProfile = await this.db.profile.create({
+      data: { ...createProfileDto, user: { connect: { id: user.id } } },
+    });
     return newProfile;
   }
 
@@ -25,24 +35,32 @@ export class ProfilesService {
   async findOne(id: string) {
     const profile = await this.db.profile.findUnique({ where: { id } });
     if (!profile) {
-      return new NotFoundException("Profile not found");
+      return new NotFoundException('Profile not found');
     }
     return profile;
   }
 
-  async update(id: string, updateProfileDto: UpdateProfileDto, file: Express.MulterS3.File, user: User) {
+  async update(
+    id: string,
+    updateProfileDto: UpdateProfileDto,
+    file: Express.MulterS3.File,
+    user: User,
+  ) {
     const profile = await this.db.profile.findUnique({ where: { id } });
     if (file) {
       updateProfileDto.image = getSupabasePublicUrl(file.location);
       this.s3Service.deleteFile(profile.image);
     }
-    return this.db.profile.update({ where: { id }, data: { ...updateProfileDto } });
+    return this.db.profile.update({
+      where: { id },
+      data: { ...updateProfileDto },
+    });
   }
 
   async remove(id: string) {
     const profile = await this.db.profile.findUnique({ where: { id } });
     if (!profile) {
-      return new NotFoundException("Profile not found");
+      return new NotFoundException('Profile not found');
     }
     await this.db.profile.delete({ where: { id } });
     return profile;
