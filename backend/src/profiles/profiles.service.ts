@@ -33,9 +33,11 @@ export class ProfilesService {
   }
 
   async findOne(id: string) {
-    const profile = await this.db.profile.findUnique({ where: { id } });
+    const profile = await this.db.profile.findFirst({
+      where: { OR: [{ id }, { user: { username: id } }] },
+    });
     if (!profile) {
-      return new NotFoundException('Profile not found');
+      throw new NotFoundException('Profile not found');
     }
     return profile;
   }
