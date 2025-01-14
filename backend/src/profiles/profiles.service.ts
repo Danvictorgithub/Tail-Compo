@@ -39,7 +39,17 @@ export class ProfilesService {
     if (!profile) {
       throw new NotFoundException('Profile not found');
     }
-    return profile;
+    const user = await this.db.user.findFirst({
+      where: {
+        profile: {
+          id: profile.id,
+        },
+      },
+      select: {
+        username: true,
+      },
+    });
+    return { ...profile, user };
   }
 
   async update(
