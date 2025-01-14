@@ -75,17 +75,19 @@ export default function Header() {
                 </div>
                 <Separator className=" " />
                 <div className="">
-                  <button
-                    type="button"
-                    className="flex gap-2 items-center hover:bg-gray-100 w-full p-2"
-                  >
-                    <Icon
-                      icon="iconamoon:profile-circle-thin"
-                      width="24"
-                      height="24"
-                    />
-                    Profile
-                  </button>
+                  <Link href={`/profile/${session.user.username}`}>
+                    <button
+                      type="button"
+                      className="flex gap-2 items-center hover:bg-gray-100 w-full p-2"
+                    >
+                      <Icon
+                        icon="iconamoon:profile-circle-thin"
+                        width="24"
+                        height="24"
+                      />
+                      Profile
+                    </button>
+                  </Link>
 
                   <button
                     type="button"
