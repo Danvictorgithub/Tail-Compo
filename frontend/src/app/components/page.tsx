@@ -1,6 +1,7 @@
-import React from "react";
-import Header from "../component/Header";
-import Image from "next/image";
+'use client';
+import React from 'react';
+import Header from '../component/Header';
+import Image from 'next/image';
 
 export default function page() {
   return (
@@ -10,7 +11,7 @@ export default function page() {
         <div className="container px-6 py-10 mx-auto">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold text-gray-800 capitalize lg:text-3xl ">
-              All Tailwind Components{" "}
+              All Tailwind Components{' '}
             </h1>
             <button className="focus:outline-none">
               <svg
