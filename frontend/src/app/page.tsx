@@ -1,15 +1,15 @@
 // import Image from "next/image";
-"use client";
-import Header from "./component/Header";
-import { Icon } from "@iconify/react";
-import Footer from "./component/Footer";
-import Link from "next/link";
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
+'use client';
+import Header from './component/Header';
+import { Icon } from '@iconify/react';
+import Footer from './component/Footer';
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === 'authenticated') {
       console.log(session);
     }
   }, [status]);
