@@ -59,6 +59,9 @@ export class ProfilesService {
     user: User,
   ) {
     const profile = await this.db.profile.findUnique({ where: { id } });
+    if (!profile) {
+      throw new NotFoundException('Profile not found');
+    }
     if (file) {
       updateProfileDto.image = getSupabasePublicUrl(file.location);
       this.s3Service.deleteFile(profile.image);

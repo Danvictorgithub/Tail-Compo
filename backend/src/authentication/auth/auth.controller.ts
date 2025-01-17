@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleOAuthGuard } from '../passport-strategies/google/google.auth.guard';
 import { RequestUserGoogle } from 'src/interfaces/requestUserGoogle';
 import { SkipThrottle } from '@nestjs/throttler';
+import { RequestUser } from 'src/interfaces/requestUser';
 
 @SkipThrottle()
 @Controller('auth')
@@ -64,7 +65,13 @@ export class AuthController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async protected(@Request() req): Promise<any> {
+  async protected(@Request() req: RequestUser): Promise<any> {
+    const updatedInfo = await this.authService.getUpdatedUserInfo(req.user);
+    req.user.email = updatedInfo.email;
+    req.user.username = updatedInfo.username;
+    req.user['name'] = updatedInfo.name;
+    req.user['image'] = updatedInfo.image;
+    req.user.emailVerified = updatedInfo.emailVerified;
     return req.user;
   }
 

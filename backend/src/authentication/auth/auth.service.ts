@@ -96,4 +96,24 @@ export class AuthService {
     }
     return this.login(user);
   }
+
+  async getUpdatedUserInfo(user: User) {
+    const userData = await this.db.user.findUnique({ where: { id: user.id } });
+    if (!userData) {
+      throw new UnauthorizedException('User not found');
+    }
+    const profile = await this.db.profile.findUnique({
+      where: { userId: user.id },
+    });
+    if (!profile) {
+      throw new UnauthorizedException('Profile not found');
+    }
+    return {
+      email: userData.email,
+      image: profile.image,
+      name: profile.name,
+      username: userData.username,
+      emailVerified: userData.emailVerified,
+    };
+  }
 }
