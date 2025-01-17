@@ -1,27 +1,27 @@
-import Image from "next/image";
-import React from "react";
-import { Icon } from "@iconify/react";
-import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
-import { Avatar } from "@/components/ui/avatar";
-import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import Image from 'next/image';
+import React from 'react';
+import { Icon } from '@iconify/react';
+import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
+import { Avatar } from '@/components/ui/avatar';
+import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/tooltip';
+import { Separator } from '@/components/ui/separator';
 
 export default function Header() {
   const { data: session, status } = useSession();
   return (
-    <header className="h-20 border-b">
+    <header className="h-20 border-b px-4">
       <nav className="container mx-auto flex justify-between items-center h-full">
         <div className="flex gap-2 items-center">
           <Link href="/" className="flex items-center gap-2">
@@ -37,7 +37,7 @@ export default function Header() {
           </div>
         </div>
         <div>
-          {status !== "authenticated" ? (
+          {status !== 'authenticated' ? (
             <Link href="/auth/signin">
               <button className="duration-200 flex gap-2 items-center border p-2 rounded-xl group hover:bg-sky-500 hover:border-sky-500 hover:text-white hover:font-bold">
                 <Icon
@@ -96,13 +96,15 @@ export default function Header() {
                     <Icon icon="mdi:tailwind" width="24" height="24" />
                     My Components
                   </button>
-                  <button
-                    type="button"
-                    className="flex gap-2 items-center hover:bg-gray-100 w-full p-2"
-                  >
-                    <Icon icon="ri:settings-fill" width="24" height="24" />
-                    Settings
-                  </button>
+                  <Link href="/profile/settings">
+                    <button
+                      type="button"
+                      className="flex gap-2 items-center hover:bg-gray-100 w-full p-2"
+                    >
+                      <Icon icon="ri:settings-fill" width="24" height="24" />
+                      Settings
+                    </button>
+                  </Link>
 
                   <Separator />
                   <button
