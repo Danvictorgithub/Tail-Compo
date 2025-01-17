@@ -1,13 +1,13 @@
-import NextAuth, { User } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth, { User } from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
 
 const handler = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-        access_token: { label: "Access Token", type: "text" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+        access_token: { label: 'Access Token', type: 'text' },
       },
       async authorize(credentials) {
         if (credentials?.access_token) {
@@ -15,16 +15,16 @@ const handler = NextAuth({
           const res: User = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/`,
             {
-              method: "GET",
+              method: 'GET',
               headers: {
                 Authorization: `Bearer ${credentials.access_token}`,
               },
-            }
+            },
           )
             .then((response) => response.json())
             .catch(() => null);
           if (!res) {
-            throw new Error("Invalid Token");
+            throw new Error('Invalid Token');
           }
           res.id = res.sub as string;
           res.access_token = credentials.access_token;
@@ -34,17 +34,17 @@ const handler = NextAuth({
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
           {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify(credentials),
-          }
+          },
         );
 
         if (!response.ok) {
           const error = await response.json();
-          throw new Error(error.message || "Authentication failed");
+          throw new Error(error.message || 'Authentication failed');
         }
 
         const res: User = await response.json();
@@ -56,7 +56,7 @@ const handler = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -69,18 +69,18 @@ const handler = NextAuth({
       const res: User = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token.access_token}`,
           },
-        }
+        },
       )
         .then((response) => response.json())
         .catch(() => null);
       if (res) {
         return token;
       } else {
-        throw new Error("Invalid Token");
+        throw new Error('Invalid Token');
       }
     },
     async session({ session, token }) {
@@ -95,7 +95,8 @@ const handler = NextAuth({
     },
   },
   pages: {
-    error: "/auth/signin?",
+    error: '/auth/signin?',
+    signIn: '/auth/signin',
   },
 });
 
