@@ -3,9 +3,12 @@
 import Footer from '@/app/component/Footer';
 import Header from '@/app/component/Header';
 import { Icon } from '@iconify/react/dist/iconify.js';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import { type ReactElement } from 'react';
 
 export default function Page(): ReactElement {
+  const { data } = useSession();
   return (
     <main>
       <Header />
@@ -19,10 +22,13 @@ export default function Page(): ReactElement {
           </div>
           <form onSubmit={() => {}}>
             <div className="flex gap-4 items-center">
-              <img
-                src="https://avatars.dicebear.com/api/avataaars/username.svg"
+              <Image
+                src={data?.user?.image as string}
                 alt="avatar"
                 className="w-20 h-20 rounded-full"
+                width="0"
+                height="0"
+                sizes="100vw"
               />
               <div className="">
                 <h2 className="font-medium text-xl">Profile Picture</h2>
@@ -40,6 +46,7 @@ export default function Page(): ReactElement {
                 type="text"
                 id="name"
                 className="w-full border rounded-lg border-gray-300 focus:border-gray-500 text-base px-4 py-2 mt-2"
+                placeholder={data?.user?.name}
               />
               <p className="text-sm text-gray-500 my-2">
                 This is your public display name in your profile.
@@ -53,6 +60,7 @@ export default function Page(): ReactElement {
                 type="text"
                 id="username"
                 className="w-full border rounded-lg border-gray-300 focus:border-gray-500 text-base px-4 py-2 mt-2"
+                placeholder={data?.user?.username}
               />
               <p className="text-sm text-gray-500 my-2">
                 This is your public display username.
@@ -67,6 +75,7 @@ export default function Page(): ReactElement {
                   type="text"
                   id="email"
                   className="w-full border rounded-lg border-gray-300 focus:border-gray-500 text-base px-4 py-2 mt-2"
+                  placeholder={data?.user?.email}
                   disabled
                 />
                 <Icon
