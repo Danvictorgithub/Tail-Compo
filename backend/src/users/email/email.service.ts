@@ -116,9 +116,14 @@ export class EmailService {
       console.log('this is successful 0');
       await this.getPasswordReset(id, user);
       console.log('this successful');
-      await this.usersService.update(user.id, {
-        password: passwordResetVerifyDto.password,
-      });
+      await this.usersService.update(
+        user.id,
+        {
+          password: passwordResetVerifyDto.password,
+        },
+        null,
+        user,
+      );
       console.log('this successful 2');
       await this.db.emailToken.delete({
         where: {

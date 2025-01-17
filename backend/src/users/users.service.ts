@@ -6,6 +6,7 @@ import * as argon from 'argon2';
 import { ProfilesService } from 'src/profiles/profiles.service';
 import { S3Service } from 'src/microservices/s3/s3.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Profile, User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -31,7 +32,7 @@ export class UsersService {
     createUserDto.password = await argon.hash(createUserDto.password);
     const { name, image, ...userObj } = createUserDto;
     const newUser = await this.db.user.create({ data: userObj });
-    await this.eventEmitter.emit('user.created', newUser);
+    this.eventEmitter.emit('user.created', newUser);
     await this.profilesService.create({ name, image }, file, newUser);
     return newUser;
   }
@@ -57,8 +58,14 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    if (!Object.keys(updateUserDto).length) {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    file: Express.MulterS3.File,
+    user: User,
+  ) {
+    let updatedUser: Profile | null = null;
+    if (!Object.keys(updateUserDto).length && !file) {
       throw new BadRequestException('No data provided');
     }
     if (updateUserDto.password) {
@@ -71,6 +78,22 @@ export class UsersService {
       if (usernameUnique) {
         throw new BadRequestException('Username already exists');
       }
+    }
+    if (updateUserDto.name || file) {
+      const profile = await this.db.profile.findUnique({
+        where: { userId: id },
+      });
+      updatedUser = await this.profilesService.update(
+        profile.id,
+        { name: updateUserDto.name, image: updateUserDto.image },
+        file,
+        user,
+      );
+      delete updateUserDto.name;
+      delete updateUserDto.image;
+    }
+    if (updatedUser) {
+      updateUserDto['profile'] = { connect: { id: updatedUser.id } };
     }
     return await this.db.user.update({ where: { id }, data: updateUserDto });
   }
