@@ -78,6 +78,11 @@ const handler = NextAuth({
         .then((response) => response.json())
         .catch(() => null);
       if (res) {
+        token.emailVerified = res.emailVerified;
+        token.name = res.name;
+        token.username = res.username;
+        token.email = res.email;
+        token.image = res.image;
         return token;
       } else {
         throw new Error('Invalid Token');
@@ -88,6 +93,7 @@ const handler = NextAuth({
       session.user.emailVerified = token.emailVerified as boolean;
       session.user.username = token.username as string;
       session.access_token = token.access_token as string;
+      session.user.image = token.image as string;
       return session;
     },
     async redirect({ baseUrl }) {
