@@ -1,19 +1,19 @@
-"use client";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Icon } from "@iconify/react";
+'use client';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Icon } from '@iconify/react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+} from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 interface UserSignUp {
   image: FileList;
   username: string;
@@ -33,44 +33,44 @@ export default function Page() {
     watch,
     formState: { errors },
   } = useForm<UserSignUp>({
-    reValidateMode: "onChange",
-    mode: "onChange",
+    reValidateMode: 'onChange',
+    mode: 'onChange',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [dialogMessage, setDialogMessage] = useState<string>("");
+  const [dialogMessage, setDialogMessage] = useState<string>('');
   const [fileName, setFileName] = useState<string | null>(null);
   const { status } = useSession();
   const { toast } = useToast();
-  if (status === "authenticated") {
-    router.push("/");
+  if (status === 'authenticated') {
+    router.push('/');
   }
   async function onSubmit(data: UserSignUp) {
     const formData = new FormData();
     if (data.image) {
-      formData.append("file", data.image[0]);
+      formData.append('file', data.image[0]);
     }
-    formData.append("username", data.username);
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
+    formData.append('username', data.username);
+    formData.append('name', data.name);
+    formData.append('email', data.email);
+    formData.append('password', data.password);
     const req = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`,
       {
-        method: "POST",
+        method: 'POST',
         body: formData,
-      }
+      },
     );
     if (req.ok) {
       toast({
-        title: "Account created",
-        description: "Please login your account",
+        title: 'Account created',
+        description: 'Please login your account',
         duration: 5000,
       });
-      router.push("/auth/signin");
+      router.push('/auth/signin');
     } else {
       const errorRes = await req.json();
       setShowDialog(true);
-      setDialogMessage(errorRes.message || "An error occurred");
+      setDialogMessage(errorRes.message || 'An error occurred');
     }
   }
   return (
@@ -114,10 +114,10 @@ export default function Page() {
               </svg>
             </span>
             <input
-              {...register("email", {
+              {...register('email', {
                 required: {
                   value: true,
-                  message: "Email Address is required",
+                  message: 'Email Address is required',
                 },
               })}
               type="email"
@@ -151,18 +151,18 @@ export default function Page() {
             </span>
             <input
               type="text"
-              {...register("username", {
+              {...register('username', {
                 required: {
                   value: true,
-                  message: "Username is required",
+                  message: 'Username is required',
                 },
                 minLength: {
                   value: 4,
-                  message: "Username must be at least 4 characters long",
+                  message: 'Username must be at least 4 characters long',
                 },
                 maxLength: {
                   value: 32,
-                  message: "Username must be at most 32 characters long",
+                  message: 'Username must be at most 32 characters long',
                 },
               })}
               className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -186,18 +186,18 @@ export default function Page() {
             </span>
             <input
               type="text"
-              {...register("name", {
+              {...register('name', {
                 required: {
                   value: true,
-                  message: "Name is required",
+                  message: 'Name is required',
                 },
                 minLength: {
                   value: 4,
-                  message: "Name must be at least 4 characters long",
+                  message: 'Name must be at least 4 characters long',
                 },
                 maxLength: {
                   value: 128,
-                  message: "Name must be at most 32 characters long",
+                  message: 'Name must be at most 32 characters long',
                 },
               })}
               className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -234,17 +234,17 @@ export default function Page() {
               id="dropzone-file"
               type="file"
               className="hidden"
-              {...register("image", {
+              {...register('image', {
                 validate: {
                   lessThan10MB: (
-                    files: any // eslint-disable-line
+                    files: any, // eslint-disable-line
                   ) => {
                     if (!files[0]) {
                       return true;
                     } else {
                       return (
                         (files[0] && files[0].size < 10 * 1024 * 1024) ||
-                        "Max 5MB"
+                        'Max 5MB'
                       );
                     }
                   },
@@ -255,7 +255,7 @@ export default function Page() {
                     }
                     if (files[0]) {
                       setFileName(files[0].name);
-                      if (files[0].type.startsWith("image/")) {
+                      if (files[0].type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onloadend = () => {
                           setImagePreview(reader.result as string);
@@ -265,13 +265,13 @@ export default function Page() {
                         setImagePreview(null);
                       }
                       return (
-                        ["image/jpeg", "image/png", "image/gif"].includes(
-                          files[0].type
-                        ) || "Only PNG, JPEG e GIF"
+                        ['image/jpeg', 'image/png', 'image/gif'].includes(
+                          files[0].type,
+                        ) || 'Only PNG, JPEG e GIF'
                       );
                     } else {
                       setImagePreview(null);
-                      return "No file selected";
+                      return 'No file selected';
                     }
                   },
                 },
@@ -314,33 +314,33 @@ export default function Page() {
             </span>
 
             <input
-              type={toggle ? "password" : "text"}
+              type={toggle ? 'password' : 'text'}
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Password"
-              {...register("password", {
-                required: "Password is required",
+              {...register('password', {
+                required: 'Password is required',
                 validate: (value) => {
                   const errors = [];
                   if (value.length < 8) {
-                    errors.push("Password must be at least 8 characters long");
+                    errors.push('Password must be at least 8 characters long');
                   }
                   if (!/[a-z]/.test(value)) {
                     errors.push(
-                      "Password must contain at least one lowercase letter"
+                      'Password must contain at least one lowercase letter',
                     );
                   }
                   if (!/[A-Z]/.test(value)) {
                     errors.push(
-                      "Password must contain at least one uppercase letter"
+                      'Password must contain at least one uppercase letter',
                     );
                   }
                   if (!/\d/.test(value)) {
-                    errors.push("Password must contain at least one number");
+                    errors.push('Password must contain at least one number');
                   }
                   if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
-                    errors.push("Password must contain at least one symbol");
+                    errors.push('Password must contain at least one symbol');
                   }
-                  return errors.length > 0 ? errors.join(", ") : true;
+                  return errors.length > 0 ? errors.join(', ') : true;
                 },
               })}
             />
@@ -370,12 +370,12 @@ export default function Page() {
             </span>
 
             <input
-              {...register("confirmPassword", {
-                required: "Confirm Password is required",
+              {...register('confirmPassword', {
+                required: 'Confirm Password is required',
                 validate: (value) =>
-                  value === watch("password") || "Passwords do not match",
+                  value === watch('password') || 'Passwords do not match',
               })}
-              type={toggle ? "password" : "text"}
+              type={toggle ? 'password' : 'text'}
               className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg    focus:border-cyan-400 :border-cyan-300 focus:ring-cyan-300 focus:outline-none focus:ring focus:ring-opacity-40"
               placeholder="Confirm Password"
             />
@@ -420,11 +420,7 @@ export default function Page() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Error</DialogTitle>
-            <DialogDescription>
-              {dialogMessage}
-              {/* This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers. */}
-            </DialogDescription>
+            <DialogDescription>{dialogMessage}</DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
