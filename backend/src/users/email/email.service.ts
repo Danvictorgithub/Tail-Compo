@@ -30,12 +30,17 @@ export class EmailService {
     await this.mailService.sendEmailConfirmation(user.email, confirmationUrl);
     return { message: 'Email Sent Successfuly' };
   }
-  async getEmailConfirmation(id: string, user: User) {
-    const emailToken = await this.db.emailToken.findUnique({ where: { id } });
+  async getEmailConfirmation(id: string) {
+    const emailToken = await this.db.emailToken.findUnique({
+      where: { id },
+      include: {
+        user: true,
+      },
+    });
     if (!emailToken) {
       throw new BadRequestException('Invalid Token');
     }
-    if (emailToken.userId !== user.id || emailToken.type !== 'VERIFY_EMAIL') {
+    if (emailToken.type !== 'VERIFY_EMAIL') {
       throw new BadRequestException('Invalid Token');
     }
     // Tokens expired after 30 minutes
@@ -45,17 +50,21 @@ export class EmailService {
     ) {
       throw new BadRequestException('Token Expired');
     }
-    if (user.emailVerified) {
+    if (emailToken.user.emailVerified) {
       throw new BadRequestException('User is already verified');
     }
     return { message: 'Email Token is Valid' };
   }
 
-  async verifyEmailConfirmation(id: string, user: User) {
+  async verifyEmailConfirmation(id: string) {
     try {
-      await this.getEmailConfirmation(id, user);
+      await this.getEmailConfirmation(id);
+      const emailTokenInfo = await this.db.emailToken.findUnique({
+        where: { id },
+        include: { user: true },
+      });
       await this.db.user.update({
-        where: { id: user.id },
+        where: { id: emailTokenInfo.user.id },
         data: {
           emailVerified: true,
         },
@@ -66,7 +75,7 @@ export class EmailService {
         },
       });
       return { message: 'Email Verified Successfully' };
-    } catch (err) {
+    } catch {
       throw new BadRequestException('Invalid Token');
     }
   }
@@ -131,7 +140,7 @@ export class EmailService {
         },
       });
       return { message: 'Password Reset Successfully' };
-    } catch (err) {
+    } catch {
       throw new BadRequestException('Invalid Token');
     }
   }

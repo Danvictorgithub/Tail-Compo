@@ -6,7 +6,6 @@ import {
   Post,
   Request,
   UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { JwtAuthGuard } from 'src/authentication/passport-strategies/jwt/jwt.auth.guard';
@@ -24,20 +23,15 @@ export class EmailController {
     return this.emailService.createEmailConfirmation(req.user);
   }
   @Get('emailConfirmation/:id')
-  @UseGuards(JwtAuthGuard)
-  async getEmailConfirmation(
-    @Request() req: RequestUser,
-    @Param('id') id: string,
-  ) {
-    return this.emailService.getEmailConfirmation(id, req.user);
+  async getEmailConfirmation(@Param('id') id: string) {
+    return this.emailService.getEmailConfirmation(id);
   }
-  @UseGuards(JwtAuthGuard)
   @Post('emailConfirmation/:id')
   async verifyEmailConfirmation(
     @Request() req: RequestUser,
     @Param('id') id: string,
   ) {
-    return this.emailService.verifyEmailConfirmation(id, req.user);
+    return this.emailService.verifyEmailConfirmation(id);
   }
 
   @Post('passwordReset')
