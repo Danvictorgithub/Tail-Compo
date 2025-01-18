@@ -81,7 +81,13 @@ function SignInForm() {
               placeholder="Email address"
             />
           </div>
-
+          <div className="text-right mt-2">
+            <Link href="/forgot-password">
+              <p className="text-gray-500 text-sm hover:text-gray-600 duration-200">
+                Forgot password?
+              </p>
+            </Link>
+          </div>
           <div className="relative flex items-center mt-4">
             <span className="absolute">
               <svg
