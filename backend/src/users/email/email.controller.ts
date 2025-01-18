@@ -39,22 +39,15 @@ export class EmailController {
     return this.emailService.createPasswordReset(passwordResetDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('passwordReset/:id')
-  async getPasswordReset(@Request() req: RequestUser, @Param('id') id: string) {
-    return this.emailService.getPasswordReset(id, req.user);
+  async getPasswordReset(@Param('id') id: string) {
+    return this.emailService.getPasswordReset(id);
   }
   @Post('passwordReset/:id')
-  @UseGuards(JwtAuthGuard)
   async verifyPasswordReset(
     @Body() passwordResetVerifyDto: PasswordResetVerifyDto,
-    @Request() req: RequestUser,
     @Param('id') id: string,
   ) {
-    return this.emailService.verifyPasswordReset(
-      id,
-      passwordResetVerifyDto,
-      req.user,
-    );
+    return this.emailService.verifyPasswordReset(id, passwordResetVerifyDto);
   }
 }

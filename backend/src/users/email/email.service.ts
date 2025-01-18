@@ -83,7 +83,7 @@ export class EmailService {
     const user = await this.db.user.findUnique({
       where: { email: passwordResetDto.email },
     });
-    if (!user || user.emailVerified) {
+    if (!user) {
       return { message: 'Request queued' };
     }
     await this.db.emailToken.deleteMany({
@@ -95,16 +95,16 @@ export class EmailService {
         type: 'RESET_PASSWORD',
       },
     });
-    const resetUrl = `${process.env.FRONTEND_URL}/password-reset/${emailToken.id}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/forgot-password/${emailToken.id}`;
     await this.mailService.sendPasswordReset(user.email, resetUrl);
     return { message: 'Request queued' };
   }
-  async getPasswordReset(id: string, user: User) {
+  async getPasswordReset(id: string) {
     const emailToken = await this.db.emailToken.findUnique({ where: { id } });
     if (!emailToken) {
       throw new BadRequestException('Invalid Token');
     }
-    if (emailToken.userId !== user.id || emailToken.type !== 'RESET_PASSWORD') {
+    if (emailToken.type !== 'RESET_PASSWORD') {
       throw new BadRequestException('Invalid Token');
     }
     // Tokens expired after 30 minutes
@@ -119,21 +119,21 @@ export class EmailService {
   async verifyPasswordReset(
     id: string,
     passwordResetVerifyDto: PasswordResetVerifyDto,
-    user: User,
   ) {
     try {
-      console.log('this is successful 0');
-      await this.getPasswordReset(id, user);
-      console.log('this successful');
+      await this.getPasswordReset(id);
+      const emailTokenInfo = await this.db.emailToken.findUnique({
+        where: { id },
+        include: { user: true },
+      });
       await this.usersService.update(
-        user.id,
+        emailTokenInfo.user.id,
         {
           password: passwordResetVerifyDto.password,
         },
         null,
-        user,
+        emailTokenInfo.user,
       );
-      console.log('this successful 2');
       await this.db.emailToken.delete({
         where: {
           id,
