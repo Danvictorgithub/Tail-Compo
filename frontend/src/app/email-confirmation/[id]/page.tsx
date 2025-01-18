@@ -62,20 +62,15 @@ export default function Page(): ReactElement {
           </h1>
           <p className="text-gray-500 mt-2">Here are some useful links</p>
           <Link href="/">
-            <button className="py-1 px-3 bg-sky-500 rounded-md text-white border-2 border-transparent mt-2 hover:bg-white hover:border-sky-500 active:bg-sky-500 hover:text-sky-500">
+            <button className="text-sm py-1 px-3 bg-sky-500 rounded-md text-white border-2 border-transparent mt-2 hover:bg-white hover:border-sky-500 active:bg-sky-500 hover:text-sky-500">
               Take me Home
             </button>
           </Link>
         </div>
       ) : (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-          <div className="flex flex-col items-center bg-white p-8 rounded-lg shadow-lg">
-            <Icon
-              icon="ooui:success"
-              width="20"
-              height="20"
-              className="text-green-500"
-            />
+        <div className="flex items-center justify-center min-h-screen ">
+          <div className="flex flex-col items-center bg-white p-8 rounded-lg ">
+            <Icon icon="ooui:success" className="text-green-500 text-6xl" />
             <h2 className="text-center text-gray-700 text-2xl font-semibold">
               Email Verified Successfully!
             </h2>
