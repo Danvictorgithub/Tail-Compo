@@ -44,10 +44,10 @@ export default function Page() {
   return (
     <main>
       <Header />
-      <section className="bg-white dark:bg-gray-900">
-        <div className="h-[32rem] bg-gray-100 dark:bg-gray-800">
+      <section className="bg-white  ">
+        <div className="h-[32rem] bg-gray-100  ">
           <div className="container px-6 py-10 mx-auto">
-            <h1 className="text-2xl font-semibold text-center text-gray-800 capitalize lg:text-3xl dark:text-white">
+            <h1 className="text-2xl font-semibold text-center text-gray-800 capitalize lg:text-3xl  ">
               Profile
             </h1>
 
@@ -60,7 +60,7 @@ export default function Page() {
 
           <div className="flex justify-center gap-8 mt-8 xl:mt-16 mx-4">
             {!isLoading && !isError ? (
-              <div className="flex flex-col items-center p-4 border sm:p-6 rounded-xl dark:border-gray-700 max-w-md mx-4">
+              <div className="flex flex-col items-center p-4 border sm:p-6 rounded-xl   max-w-md mx-4">
                 <Image
                   width="0"
                   height="0"
@@ -71,16 +71,16 @@ export default function Page() {
                   alt="Profile image"
                 />
 
-                <h1 className="mt-4 text-2xl font-semibold text-gray-700 capitalize dark:text-white">
+                <h1 className="mt-4 text-2xl font-semibold text-gray-700 capitalize  ">
                   {data!.name}
                 </h1>
 
-                <p className="mt-2 text-gray-500 capitalize dark:text-gray-300">
+                <p className="mt-2 text-gray-500 capitalize  ">
                   @{data!.user.username}
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col items-center p-4 border sm:p-6 rounded-xl dark:border-gray-700 max-w-md">
+              <div className="flex flex-col items-center p-4 border sm:p-6 rounded-xl   max-w-md">
                 <Skeleton className="aspect-square w-[400px]" />
                 <Skeleton className=" mt-4 w-full h-8" />
                 <Skeleton className=" mt-2 w-[80%] h-8" />
