@@ -30,6 +30,7 @@ export default function Page(): ReactElement {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingId, setLoadingId] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -46,8 +47,33 @@ export default function Page(): ReactElement {
     setImagePreview(null);
     resetField('image');
   }
+  async function sendEmailVerification() {
+    setLoading(true);
+    setLoadingId(1);
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/user-email/emailConfirmation`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session!.access_token}`,
+        },
+      },
+    );
+    if (req.ok) {
+      toast({
+        title: 'Email Verification sent successfully',
+        duration: 5000,
+      });
+    } else {
+      const errorRes = await req.json();
+      setShowDialog(true);
+      setDialogMessage(errorRes.message || 'An error occurred');
+    }
+    setLoading(false);
+  }
   async function onSubmit(data: ProfileFormData) {
     setLoading(true);
+    setLoadingId(0);
     const formData = new FormData();
     if (data.name) {
       formData.append('name', data.name);
@@ -248,9 +274,33 @@ export default function Page(): ReactElement {
               </p>
             ) : null}
             <div className="mt-4">
-              <label htmlFor="email" className="font-medium text-base">
-                Email
-              </label>
+              <div className="flex items-center gap-2">
+                <label htmlFor="email" className="font-medium text-base">
+                  Email
+                </label>
+                {session?.user?.emailVerified ? (
+                  <div className="flex gap-1 items-center">
+                    <Icon
+                      icon="icon-park-solid:success"
+                      width="16"
+                      height="16"
+                      className="text-green-500"
+                    />
+                    <p className="text-sm text-green-500">Email verified</p>
+                  </div>
+                ) : (
+                  <div className="flex gap-1 items-center">
+                    <Icon
+                      icon="fluent-color:warning-16"
+                      width="16"
+                      height="16"
+                    />
+                    <p className="text-sm text-yellow-500">
+                      Email not verified
+                    </p>
+                  </div>
+                )}
+              </div>
               <div className="relative">
                 <input
                   type="text"
@@ -270,6 +320,18 @@ export default function Page(): ReactElement {
               <p className="text-sm text-gray-500 my-2">
                 This is your public display email.
               </p>
+              {session?.user.emailVerified ? null : (
+                <button
+                  type="button"
+                  onClick={sendEmailVerification}
+                  className="flex gap-2 items-center mt-4 bg-sky-500 text-white border-2 border-transparent px-4 py-2 rounded-md hover:border-sky-500 hover:text-sky-500 hover:bg-white active:bg-sky-500 duration-200"
+                >
+                  {loading && loadingId == 1 ? (
+                    <Icon icon="eos-icons:loading" width="24" height="24" />
+                  ) : null}
+                  Re-send Email Verification
+                </button>
+              )}
             </div>
             <div className="mt-8 font-bold text-lg">
               <h3>Credentials</h3>
@@ -362,7 +424,7 @@ export default function Page(): ReactElement {
               </p>
             ) : null}
             <button className="flex gap-2 items-center mt-4 bg-sky-500 text-white border-2 border-transparent px-4 py-2 rounded-md hover:border-sky-500 hover:text-sky-500 hover:bg-white active:bg-sky-500 duration-200">
-              {loading ? (
+              {loading && loadingId == 0 ? (
                 <Icon icon="eos-icons:loading" width="24" height="24" />
               ) : null}
               Update Profile
