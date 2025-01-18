@@ -100,7 +100,10 @@ export class EmailService {
     return { message: 'Request queued' };
   }
   async getPasswordReset(id: string) {
-    const emailToken = await this.db.emailToken.findUnique({ where: { id } });
+    const emailToken = await this.db.emailToken.findUnique({
+      where: { id },
+      include: { user: true },
+    });
     if (!emailToken) {
       throw new BadRequestException('Invalid Token');
     }
@@ -114,7 +117,7 @@ export class EmailService {
     ) {
       throw new BadRequestException('Token Expired');
     }
-    return { message: 'Email Token is Valid' };
+    return { message: 'Email Token is Valid', email: emailToken.user.email };
   }
   async verifyPasswordReset(
     id: string,

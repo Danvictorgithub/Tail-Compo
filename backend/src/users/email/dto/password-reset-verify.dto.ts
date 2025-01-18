@@ -1,6 +1,7 @@
-import { IsEmail, IsStrongPassword } from "class-validator";
+import { IsStrongPassword } from 'class-validator';
 
 export class PasswordResetVerifyDto {
-    @IsStrongPassword()
-    password: string;
+  @IsStrongPassword()
+  password: string;
 }
+
