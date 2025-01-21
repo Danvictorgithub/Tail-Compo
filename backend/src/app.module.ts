@@ -8,6 +8,7 @@ import { MulterConfigModuleModule } from './configs/multer-config-module/multer-
 import { S3Module } from './microservices/s3/s3.module';
 import { MailModule } from './configs/mail/mail.module';
 import { CoreModule } from './configs/core/core.module';
+import { HomeModule } from './home/home.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CoreModule } from './configs/core/core.module';
     S3Module,
     MailModule,
     CoreModule,
+    HomeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
