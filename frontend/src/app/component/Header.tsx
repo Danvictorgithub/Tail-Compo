@@ -28,12 +28,17 @@ export default function Header() {
             <Image src="/tailchro.png" width={50} height={50} alt="" />
             <p className="font-bold text-lg text-cyan-600">TailChro</p>
           </Link>
-          <div className="flex gap-2">
+          <div className="group flex gap-2 items-center">
             <p>Categories</p>
-            <div className="flex gap-1 items-center">
-              <p>Chro AI</p>
-              <Icon icon="mingcute:ai-fill" className="text-cyan-400" />
-            </div>
+            <Link href="/chro">
+              <button className="flex gap-1 items-center border border-transparent hover:border-sky-500 p-2 rounded-xl duration-200 group-active:bg-sky-500 active:text-white ">
+                <p>Chro AI</p>
+                <Icon
+                  icon="mingcute:ai-fill"
+                  className="text-cyan-400 group-active:text-white duration-200"
+                />
+              </button>
+            </Link>
           </div>
         </div>
         <div>
