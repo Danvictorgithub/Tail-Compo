@@ -276,26 +276,25 @@ export default function Home() {
           <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-16 md:grid-cols-2 xl:grid-cols-4">
             {!isLoading
               ? data!.map((user) => (
-                  <div
-                    key={user.username}
-                    className="flex flex-col items-center p-8 transition-colors duration-300 transform cursor-pointer group hover:bg-cyan-600 rounded-xl"
-                  >
-                    <img
-                      className="object-cover w-32 h-32 rounded-full ring-4 ring-gray-300"
-                      src={user.profile.image}
-                      alt=""
-                    />
+                  <Link key={user.username} href={`/profile/${user.username}`}>
+                    <div className="flex flex-col items-center p-8 transition-colors duration-300 transform cursor-pointer group hover:bg-cyan-600 rounded-xl">
+                      <img
+                        className="object-cover w-32 h-32 rounded-full ring-4 ring-gray-300"
+                        src={user.profile.image}
+                        alt=""
+                      />
 
-                    <h1 className="mt-4 text-2xl font-semibold text-gray-700 capitalize  group-hover:text-white">
-                      {user.profile.name}
-                    </h1>
+                      <h1 className="mt-4 text-2xl font-semibold text-gray-700 capitalize  group-hover:text-white">
+                        {user.profile.name}
+                      </h1>
 
-                    <p className="mt-2 text-gray-500 capitalize  group-hover:text-gray-300">
-                      {user.username}
-                    </p>
+                      <p className="mt-2 text-gray-500 capitalize  group-hover:text-gray-300">
+                        {user.username}
+                      </p>
 
-                    <div className="flex mt-3 -mx-2"></div>
-                  </div>
+                      <div className="flex mt-3 -mx-2"></div>
+                    </div>
+                  </Link>
                 ))
               : Array.from({ length: 8 }).map((_, i) => (
                   <div
