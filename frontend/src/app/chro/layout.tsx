@@ -35,8 +35,7 @@ export default function RootLayout({
       >
         <Toaster />
         <AuthContext>
-          <SidebarProvider></SidebarProvider>
-          {children}
+          <SidebarProvider>{children}</SidebarProvider>
         </AuthContext>
       </body>
     </html>
